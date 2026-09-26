@@ -146,4 +146,18 @@ describe("TheLio business plan", function () {
     expect(await token.balanceOf(admin.address)).to.equal(adminBefore.add(5_000_000));
     expect((await lio.getUserProfile(alice.address)).principal).to.equal(100_000_000);
   });
+
+  it("provides a six-decimal test USDT faucet for test-network investors", async function () {
+    const [, alice] = await ethers.getSigners();
+    const tokenFactory = await ethers.getContractFactory("TestUSDT");
+    const token = await tokenFactory.deploy();
+    await token.deployed();
+
+    expect(await token.name()).to.equal("Test USDT");
+    expect(await token.symbol()).to.equal("tUSDT");
+    expect(await token.decimals()).to.equal(6);
+
+    await token.connect(alice).faucet();
+    expect(await token.balanceOf(alice.address)).to.equal(10_000_000_000);
+  });
 });

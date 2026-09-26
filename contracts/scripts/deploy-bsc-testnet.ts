@@ -23,10 +23,10 @@ async function main() {
     throw new Error("Deployer has no tBNB for gas");
   }
 
-  const tokenFactory = await ethers.getContractFactory("MockPaymentToken");
+  const tokenFactory = await ethers.getContractFactory("TestUSDT");
   const token = await tokenFactory.deploy();
   await token.deployed();
-  console.log(`Mock USD: ${token.address}`);
+  console.log(`Test USDT: ${token.address}`);
 
   const lioFactory = await ethers.getContractFactory("TheLio");
   const minimumInvestment = units("100");
@@ -38,7 +38,7 @@ async function main() {
   await (await token.mint(deployer.address, treasuryFunding)).wait();
   await (await token.approve(lio.address, treasuryFunding)).wait();
   await (await lio.fundTreasury(treasuryFunding)).wait();
-  console.log(`Treasury funded: ${ethers.utils.formatUnits(treasuryFunding, DECIMALS)} mUSD`);
+  console.log(`Treasury funded: ${ethers.utils.formatUnits(treasuryFunding, DECIMALS)} tUSDT`);
 
   const artifact = JSON.parse(
     fs.readFileSync(path.join(__dirname, "../artifacts/contracts/TheLio.sol/TheLio.json"), "utf8"),
@@ -53,7 +53,7 @@ async function main() {
     address: lio.address,
     treasury: deployer.address,
     paymentAsset: token.address,
-    paymentAssetSymbol: "mUSD",
+    paymentAssetSymbol: "tUSDT",
     paymentAssetDecimals: DECIMALS,
     minimumInvestment: minimumInvestment.toString(),
     treasuryFunding: treasuryFunding.toString(),

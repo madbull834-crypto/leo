@@ -17,6 +17,11 @@ Amounts use the payment asset's smallest unit. The constructor minimum represent
 $100 and derives one business-dollar unit from it. For example, pass `100_000_000`
 for a six-decimal stablecoin; all thresholds and rewards are scaled automatically.
 
+The BSC Testnet deployment uses `TestUSDT` (`tUSDT`), a six-decimal test-only
+token. Any test wallet can call `faucet()` to receive 10,000 tUSDT, then approve
+the `TheLio` contract before activating an investment. The faucet and unrestricted
+`mint` function are intentionally unsafe and must never be used on mainnet.
+
 The contract keeps principal and earned rewards as liabilities. Fund the treasury
 with enough surplus before activation so the one-time 5% referral commission can
 be paid immediately without using locked principal. ROI, weekly rewards, expense

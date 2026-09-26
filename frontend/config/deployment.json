@@ -1,14 +1,14 @@
 {
   "chainId": 97,
   "network": "bscTestnet",
-  "address": "0xef8200Dd3994967aaDB9BE0F7EfC3d47E133fD04",
+  "address": "0x8B8078Cf77A606931BEb28f48b183B8D7A3Cf9aF",
   "treasury": "0xd3F03CCa0863631099544a3158ceb7dc7F8b5a4E",
-  "paymentAsset": "0x0C145355380B14bDe3B25E4b3550583c81073939",
-  "paymentAssetSymbol": "mUSD",
+  "paymentAsset": "0x91c85dDdaDB66bcfb10724B1A8eF15c1EF190f74",
+  "paymentAssetSymbol": "tUSDT",
   "paymentAssetDecimals": 6,
   "minimumInvestment": "100000000",
   "treasuryFunding": "500000000000",
   "rpcUrl": "https://bsc-testnet-dataseed.bnbchain.org",
   "explorerUrl": "https://testnet.bscscan.com",
-  "deployedAt": "2026-09-26T07:33:17.191Z"
+  "deployedAt": "2026-09-26T09:25:56.950Z"
 }
