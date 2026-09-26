@@ -1,15 +1,18 @@
 import { ChartCard } from './ui/ChartCard';
 import { TierLadderChart } from './charts/TierLadderChart';
 import { TIER_VARS, toNumber } from '../lib/viz';
+import { PAYMENT_ASSET_DECIMALS, PAYMENT_ASSET_SYMBOL } from '../lib/contract';
 import type { LioState } from '../hooks/useLio';
 
 export function TiersTab({ state }: { state: LioState }) {
   const { profile, tier, weeklyTiers, expenseTiers, tourRewards } = state;
+  const scale = 10 ** PAYMENT_ASSET_DECIMALS;
+  const asset = (value: bigint | undefined) => toNumber(value) / scale;
   const matched = Math.min(
-    toNumber(profile?.leftBusiness),
-    toNumber(profile?.rightBusiness),
+    asset(profile?.leftBusiness),
+    asset(profile?.rightBusiness),
   ) * 2;
-  const fresh = toNumber(profile?.freshBusiness);
+  const fresh = asset(profile?.freshBusiness);
   const achieved = Number(tier ?? 0n);
 
   const ladderTable = (
@@ -31,8 +34,8 @@ export function TiersTab({ state }: { state: LioState }) {
                 Tier {row.index + 1}
               </span>
             </td>
-            <td className="num">{Number(row.threshold).toLocaleString('en-US')}</td>
-            <td className="num">{Number(row.reward).toLocaleString('en-US')}</td>
+            <td className="num">{asset(row.threshold).toLocaleString('en-US')} {PAYMENT_ASSET_SYMBOL}</td>
+            <td className="num">{asset(row.reward).toLocaleString('en-US')} {PAYMENT_ASSET_SYMBOL}</td>
             <td>{index < achieved ? 'Reached' : 'Locked'}</td>
           </tr>
         ))}
@@ -45,11 +48,11 @@ export function TiersTab({ state }: { state: LioState }) {
       <div className="grid-cards">
         <ChartCard
           title="Weekly team tier ladder"
-          subtitle="Thresholds require equal qualifying volume from both legs"
+          subtitle="Your left and right teams must contribute equally to unlock each level"
           className="span-12"
           table={ladderTable}
         >
-          <TierLadderChart tiers={weeklyTiers} combined={matched} achieved={achieved} />
+          <TierLadderChart tiers={weeklyTiers.map((row) => ({ ...row, threshold: BigInt(Math.round(asset(row.threshold))) }))} combined={matched} achieved={achieved} />
         </ChartCard>
       </div>
 
@@ -57,8 +60,8 @@ export function TiersTab({ state }: { state: LioState }) {
         <section className="card span-6">
           <div className="card-head">
             <div>
-              <h2 className="card-title">Expense benefit tiers</h2>
-              <p className="card-sub">Qualified on fresh business ({fresh.toLocaleString('en-US')})</p>
+              <h2 className="card-title">Business milestone benefits</h2>
+              <p className="card-sub">Based on {fresh.toLocaleString('en-US')} {PAYMENT_ASSET_SYMBOL} in new business</p>
             </div>
           </div>
           <div className="card-body table-scroll">
@@ -68,11 +71,11 @@ export function TiersTab({ state }: { state: LioState }) {
               </thead>
               <tbody>
                 {expenseTiers.map((row) => (
-                  <tr key={row.index} className={fresh >= Number(row.threshold) ? 'is-current' : undefined}>
+                  <tr key={row.index} className={fresh >= asset(row.threshold) ? 'is-current' : undefined}>
                     <td>{row.index + 1}</td>
-                    <td className="num">{Number(row.threshold).toLocaleString('en-US')}</td>
-                    <td className="num">{Number(row.benefit).toLocaleString('en-US')}</td>
-                    <td>{fresh >= Number(row.threshold) ? 'Qualified' : 'Not yet'}</td>
+                    <td className="num">{asset(row.threshold).toLocaleString('en-US')}</td>
+                    <td className="num">{asset(row.benefit).toLocaleString('en-US')}</td>
+                    <td>{fresh >= asset(row.threshold) ? 'Unlocked' : 'In progress'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -97,15 +100,14 @@ export function TiersTab({ state }: { state: LioState }) {
                   <tr key={row.index}>
                     <td>{row.index + 1}</td>
                     <td>{row.name}</td>
-                    <td className="num">{Number(row.target).toLocaleString('en-US')}</td>
-                    <td>{row.enabled ? 'Yes' : 'No'}</td>
+                    <td className="num">{asset(row.target).toLocaleString('en-US')} {PAYMENT_ASSET_SYMBOL}</td>
+                    <td>{row.enabled ? 'Available' : 'Unavailable'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
             <p className="note">
-              Qualification uses direct business: Thailand 10k, Bali 25k,
-              Russia 50k, and Switzerland 100k.
+              Tour milestones are based on your personally referred business volume.
             </p>
           </div>
         </section>

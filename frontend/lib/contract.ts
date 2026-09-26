@@ -6,8 +6,19 @@ export const RPC_URL: string = (deployment as { rpcUrl?: string }).rpcUrl ?? 'ht
 export const THE_LIO_ABI = abi;
 export const DEPLOYMENT = deployment;
 export const CONTRACT_ADDRESS: string = deployment.address;
+export const PAYMENT_ASSET_DECIMALS: number =
+  (deployment as { paymentAssetDecimals?: number }).paymentAssetDecimals ?? 0;
+export const PAYMENT_ASSET_SYMBOL: string =
+  (deployment as { paymentAssetSymbol?: string }).paymentAssetSymbol ?? 'units';
 
-/** Read-only provider pointed at the local Hardhat node. */
+const PAYMENT_TOKEN_ABI = [
+  'function balanceOf(address) view returns (uint256)',
+  'function allowance(address,address) view returns (uint256)',
+  'function approve(address,uint256) returns (bool)',
+  'function faucet()',
+];
+
+/** Read-only provider for the network recorded in deployment.json. */
 export function getReadProvider(): JsonRpcProvider {
   return new JsonRpcProvider(RPC_URL);
 }
@@ -18,6 +29,10 @@ export function getReadContract(): Contract {
 
 export function getWriteContract(signer: Signer): Contract {
   return new Contract(CONTRACT_ADDRESS, THE_LIO_ABI, signer);
+}
+
+export function getPaymentToken(address: string, runner: Signer | JsonRpcProvider): Contract {
+  return new Contract(address, PAYMENT_TOKEN_ABI, runner);
 }
 
 /**
@@ -44,6 +59,40 @@ export async function getBrowserSigner(): Promise<Signer> {
   const provider = new BrowserProvider(injected);
   await provider.send('eth_requestAccounts', []);
   return provider.getSigner();
+}
+
+export async function listBrowserAccounts(requestAccess = false): Promise<string[]> {
+  const injected = (window as any).ethereum;
+  if (!injected) return [];
+  return injected.request({
+    method: requestAccess ? 'eth_requestAccounts' : 'eth_accounts',
+  });
+}
+
+export async function ensureDeploymentNetwork(): Promise<void> {
+  const injected = (window as any).ethereum;
+  if (!injected) throw new Error('Install MetaMask or another browser wallet to continue');
+
+  const chainId = Number((deployment as { chainId: number }).chainId);
+  const chainIdHex = `0x${chainId.toString(16)}`;
+  try {
+    await injected.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: chainIdHex }],
+    });
+  } catch (error: any) {
+    if (error?.code !== 4902 || chainId !== 97) throw error;
+    await injected.request({
+      method: 'wallet_addEthereumChain',
+      params: [{
+        chainId: chainIdHex,
+        chainName: 'BSC Testnet',
+        nativeCurrency: { name: 'Test BNB', symbol: 'tBNB', decimals: 18 },
+        rpcUrls: [RPC_URL],
+        blockExplorerUrls: ['https://testnet.bscscan.com'],
+      }],
+    });
+  }
 }
 
 export function hasInjectedWallet(): boolean {

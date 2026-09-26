@@ -1,11 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
+import { parseUnits } from 'ethers';
 import {
   CONTRACT_ADDRESS,
+  PAYMENT_ASSET_DECIMALS,
   decodeError,
+  ensureDeploymentNetwork,
+  getBrowserSigner,
   getLocalSigner,
+  getPaymentToken,
   getReadContract,
   getReadProvider,
   getWriteContract,
+  hasInjectedWallet,
+  listBrowserAccounts,
   listLocalAccounts,
 } from '../lib/contract';
 import type {
@@ -35,6 +42,8 @@ export interface LioState {
   chainTime: number;
   accounts: string[];
   account: string;
+  paymentBalance: bigint;
+  paymentAllowance: bigint;
   config?: ProtocolConfig;
   profile?: UserProfile;
   tier?: bigint;
@@ -51,6 +60,8 @@ const INITIAL: LioState = {
   chainTime: 0,
   accounts: [],
   account: '',
+  paymentBalance: 0n,
+  paymentAllowance: 0n,
   investors: [],
   weeklyTiers: [],
   expenseTiers: [],
@@ -80,7 +91,8 @@ export function useLio() {
       }
 
       const contract = getReadContract();
-      const accounts = await listLocalAccounts();
+      const browserAccounts = hasInjectedWallet() ? await listBrowserAccounts() : [];
+      const accounts = browserAccounts.length > 0 ? browserAccounts : await listLocalAccounts();
       const latestBlock = await provider.getBlock('latest');
       const chainTime = Number(latestBlock?.timestamp ?? 0);
 
@@ -183,14 +195,25 @@ export function useLio() {
       const selected = everyProfile.find((entry) => entry.address === account);
       const profile = selected?.profile;
       const tier = selected?.tier;
+      let paymentBalance = 0n;
+      let paymentAllowance = 0n;
+      if (account && paymentAsset !== '0x0000000000000000000000000000000000000000') {
+        const token = getPaymentToken(paymentAsset, provider);
+        [paymentBalance, paymentAllowance] = await Promise.all([
+          token.balanceOf(account),
+          token.allowance(account, CONTRACT_ADDRESS),
+        ]);
+      }
 
       setState({
         status: 'ready',
-        message: 'Connected to local Hardhat network',
+        message: account ? 'Wallet connected' : 'Connect your wallet to begin',
         chainId: network.chainId.toString(),
         chainTime,
         accounts,
         account,
+        paymentBalance,
+        paymentAllowance,
         config: {
           treasury,
           paymentAsset,
@@ -219,14 +242,25 @@ export function useLio() {
       setState((prev) => ({
         ...prev,
         status: 'error',
-        message:
-          'Local network not reachable. Start the Hardhat node, then deploy.',
+        message: 'BSC Testnet is not responding. Check your connection and try again.',
       }));
     }
   }, []);
 
   useEffect(() => {
     void load();
+  }, [load]);
+
+  useEffect(() => {
+    const injected = (window as any).ethereum;
+    if (!injected?.on) return;
+    const refresh = () => void load();
+    injected.on('accountsChanged', refresh);
+    injected.on('chainChanged', refresh);
+    return () => {
+      injected.removeListener?.('accountsChanged', refresh);
+      injected.removeListener?.('chainChanged', refresh);
+    };
   }, [load]);
 
   const selectAccount = useCallback(
@@ -237,6 +271,26 @@ export function useLio() {
     [load],
   );
 
+  const connectWallet = useCallback(async () => {
+    setBusy(true);
+    setTxMessage('Connecting wallet...');
+    try {
+      await ensureDeploymentNetwork();
+      const accounts = await listBrowserAccounts(true);
+      await load(accounts[0]);
+      setTxMessage('Wallet connected to BSC Testnet');
+    } catch (error) {
+      setTxMessage(`Connection failed: ${decodeError(error)}`);
+    } finally {
+      setBusy(false);
+    }
+  }, [load]);
+
+  const getSigner = useCallback(async () => {
+    if (hasInjectedWallet()) return getBrowserSigner();
+    return getLocalSigner(state.account);
+  }, [state.account]);
+
   /** Runs a write against the contract as the currently selected account. */
   const send = useCallback(
     async (label: string, run: (contract: any) => Promise<any>) => {
@@ -244,7 +298,7 @@ export function useLio() {
       setBusy(true);
       setTxMessage(`${label}...`);
       try {
-        const signer = await getLocalSigner(state.account);
+        const signer = await getSigner();
         const contract = getWriteContract(signer);
         const tx = await run(contract);
         await tx.wait();
@@ -257,21 +311,58 @@ export function useLio() {
         setBusy(false);
       }
     },
-    [state.account, load],
+    [state.account, load, getSigner],
+  );
+
+  const sendToken = useCallback(
+    async (label: string, run: (token: any) => Promise<any>) => {
+      if (!state.account || !state.config) return;
+      setBusy(true);
+      setTxMessage(`${label}...`);
+      try {
+        const signer = await getSigner();
+        const token = getPaymentToken(state.config.paymentAsset, signer);
+        const tx = await run(token);
+        await tx.wait();
+        setTxMessage(`${label} confirmed`);
+        await load(state.account);
+      } catch (error) {
+        setTxMessage(`${label} failed: ${decodeError(error)}`);
+      } finally {
+        setBusy(false);
+      }
+    },
+    [state.account, state.config, getSigner, load],
   );
 
   const activate = useCallback(
-    (referrer: string, amount: string) =>
+    (referrer: string, amount: string) => {
+      const units = parseUnits(amount || '0', PAYMENT_ASSET_DECIMALS);
+      return (
       send('Activate investment', (contract) =>
         contract.activateInvestor(
           referrer,
-          BigInt(amount),
+          units,
           state.config?.paymentAsset === '0x0000000000000000000000000000000000000000'
-            ? { value: BigInt(amount) }
+            ? { value: units }
             : {},
         ),
-      ),
+      ));
+    },
     [send, state.config?.paymentAsset],
+  );
+
+  const requestTestUsdt = useCallback(
+    () => sendToken('Request test USDT', (token) => token.faucet()),
+    [sendToken],
+  );
+
+  const approveInvestment = useCallback(
+    (amount: string) => {
+      const units = parseUnits(amount || '0', PAYMENT_ASSET_DECIMALS);
+      return sendToken('Approve investment', (token) => token.approve(CONTRACT_ADDRESS, units));
+    },
+    [sendToken],
   );
 
   const claimRoi = useCallback(
@@ -297,7 +388,10 @@ export function useLio() {
     busy,
     txMessage,
     reload: () => load(state.account),
+    connectWallet,
     selectAccount,
+    requestTestUsdt,
+    approveInvestment,
     activate,
     claimRoi,
     claimWeekly,

@@ -6,6 +6,7 @@ import { RewardsStackChart, type StackRow } from './charts/RewardsStackChart';
 import { RoiProjectionChart } from './charts/RoiProjectionChart';
 import { compact, ratio, toNumber } from '../lib/viz';
 import { formatUnitsRaw } from '../lib/format';
+import { PAYMENT_ASSET_DECIMALS, PAYMENT_ASSET_SYMBOL } from '../lib/contract';
 import type { Investor, LioState } from '../hooks/useLio';
 
 const DAY = 86_400;
@@ -18,12 +19,14 @@ export function OverviewTab({ state }: { state: LioState }) {
   const { config, profile, tier, investors } = state;
   if (!config) return null;
 
-  const principal = toNumber(profile?.principal);
-  const roiAccrued = toNumber(profile?.roiAccrued);
-  const directRewards = toNumber(profile?.directRewards);
-  const teamRewards = toNumber(profile?.teamRewards);
-  const left = toNumber(profile?.leftBusiness);
-  const right = toNumber(profile?.rightBusiness);
+  const scale = 10 ** PAYMENT_ASSET_DECIMALS;
+  const asset = (value: bigint | undefined) => toNumber(value) / scale;
+  const principal = asset(profile?.principal);
+  const roiAccrued = asset(profile?.roiAccrued);
+  const directRewards = asset(profile?.directRewards);
+  const teamRewards = asset(profile?.teamRewards);
+  const left = asset(profile?.leftBusiness);
+  const right = asset(profile?.rightBusiness);
   const combined = left + right;
   const matched = Math.min(left, right) * 2;
   const tierNumber = Number(tier ?? 0n);
@@ -37,15 +40,15 @@ export function OverviewTab({ state }: { state: LioState }) {
 
   // Next weekly tier threshold the reader has not yet cleared.
   const nextTier = state.weeklyTiers.find(
-    (candidate) => candidate.enabled && matched < Number(candidate.threshold),
+    (candidate) => candidate.enabled && matched < asset(candidate.threshold),
   );
 
   const rows: StackRow[] = investors.map((investor: Investor) => ({
     key: investor.address,
     label: shortAddress(investor.address),
-    direct: toNumber(investor.profile.directRewards),
-    team: toNumber(investor.profile.teamRewards),
-    roi: toNumber(investor.profile.roiAccrued),
+    direct: asset(investor.profile.directRewards),
+    team: asset(investor.profile.teamRewards),
+    roi: asset(investor.profile.roiAccrued),
     isCurrent: investor.address === state.account,
   }));
 
@@ -97,13 +100,13 @@ export function OverviewTab({ state }: { state: LioState }) {
   return (
     <>
       <div className="grid-cards">
-        <StatTile label="Principal" value={compact(principal)}
-          foot={<span>Locked for {lockDays} days</span>} />
-        <StatTile label="ROI accrued" value={compact(roiAccrued)}
+        <StatTile label="Your investment" value={`${compact(principal)} ${PAYMENT_ASSET_SYMBOL}`}
+          foot={<span>{profile?.active ? `Unlocks after ${lockDays} days` : 'No active position'}</span>} />
+        <StatTile label="Monthly ROI earned" value={`${compact(roiAccrued)} ${PAYMENT_ASSET_SYMBOL}`}
           foot={<span>{formatUnitsRaw(profile?.roiClaimed)} claimed</span>} />
-        <StatTile label="Direct rewards" value={compact(directRewards)}
+        <StatTile label="Referral rewards" value={`${compact(directRewards)} ${PAYMENT_ASSET_SYMBOL}`}
           foot={<span>{Number(config.directReferralBps) / 100}% of referred volume</span>} />
-        <StatTile label="Team rewards" value={compact(teamRewards)}
+        <StatTile label="Team rewards" value={`${compact(teamRewards)} ${PAYMENT_ASSET_SYMBOL}`}
           foot={<span>Weekly tier {tierNumber || '-'}</span>} />
       </div>
 
@@ -130,10 +133,10 @@ export function OverviewTab({ state }: { state: LioState }) {
             <Meter
               name={nextTier ? `Progress to tier ${nextTier.index + 1}` : 'Top tier reached'}
               value={matched}
-              limit={nextTier ? Number(nextTier.threshold) : Math.max(matched, 1)}
-              display={`${compact(matched)} / ${nextTier ? compact(Number(nextTier.threshold)) : compact(matched)}`}
+              limit={nextTier ? asset(nextTier.threshold) : Math.max(matched, 1)}
+              display={`${compact(matched)} / ${nextTier ? compact(asset(nextTier.threshold)) : compact(matched)}`}
               foot={nextTier
-                ? `${compact(Number(nextTier.threshold) - matched)} more matched volume needed`
+                ? `${compact(asset(nextTier.threshold) - matched)} ${PAYMENT_ASSET_SYMBOL} more matched volume needed`
                 : 'All configured thresholds cleared'}
             />
           </div>
@@ -151,16 +154,16 @@ export function OverviewTab({ state }: { state: LioState }) {
 
       <div className="grid-cards">
         <ChartCard
-          title="ROI accrual across the lock"
+          title="How your monthly ROI grows"
           subtitle={
             principal > 0
-              ? `Stepped: accrueROI credits whole 30-day periods at ${Number(config.roiMinBps) / 100}% per month`
-              : `Illustrative, using the ${formatUnitsRaw(config.minimumInvestment)} minimum - this account holds no position`
+              ? `ROI is added after each complete 30-day period at ${Number(config.roiMinBps) / 100}% per month`
+              : `Example based on the ${formatUnitsRaw(config.minimumInvestment)} minimum investment`
           }
           className="span-7"
         >
           <RoiProjectionChart
-            principal={principal || Number(config.minimumInvestment)}
+            principal={principal || asset(config.minimumInvestment)}
             monthlyBps={Number(config.roiMinBps)}
             lockDays={lockDays}
             elapsedDays={elapsedDays}
@@ -187,16 +190,16 @@ export function OverviewTab({ state }: { state: LioState }) {
             />
             <Meter
               name="ROI claimed"
-              value={toNumber(profile?.roiClaimed)}
+              value={asset(profile?.roiClaimed)}
               limit={Math.max(roiAccrued, 1)}
-              display={`${Math.round(ratio(toNumber(profile?.roiClaimed), Math.max(roiAccrued, 1)) * 100)}%`}
+              display={`${Math.round(ratio(asset(profile?.roiClaimed), Math.max(roiAccrued, 1)) * 100)}%`}
               foot={`${formatUnitsRaw(profile?.roiAccrued)} accrued, ${formatUnitsRaw(profile?.roiClaimed)} claimed`}
             />
             <Meter
               name="Treasury liquidity used"
-              value={toNumber(config.totalLiabilities)}
-              limit={Math.max(toNumber(config.treasuryBalance), 1)}
-              display={`${compact(toNumber(config.totalLiabilities))} / ${compact(toNumber(config.treasuryBalance))}`}
+              value={asset(config.totalLiabilities)}
+              limit={Math.max(asset(config.treasuryBalance), 1)}
+              display={`${compact(asset(config.totalLiabilities))} / ${compact(asset(config.treasuryBalance))}`}
               foot={`${formatUnitsRaw(config.availableLiquidity)} available`}
             />
           </div>
@@ -205,15 +208,15 @@ export function OverviewTab({ state }: { state: LioState }) {
 
       <div className="grid-cards">
         <ChartCard
-          title="Reward composition across the network"
-          subtitle="Every activated account on this chain"
+          title="Your reward mix"
+          subtitle="Monthly ROI, referral rewards and team rewards by connected account"
           className="span-12"
           table={stackTable}
         >
           {rows.length > 0 ? (
             <RewardsStackChart rows={rows} />
           ) : (
-            <p className="empty-state">No activated accounts yet. Run the seed script or activate one from Actions.</p>
+            <p className="empty-state">No active position yet. Open Get started to fund your wallet and invest.</p>
           )}
         </ChartCard>
       </div>

@@ -262,6 +262,22 @@ body {
   font-weight: 750;
 }
 
+.wallet-callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding: 18px 20px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: linear-gradient(110deg, color-mix(in srgb, var(--teal) 11%, var(--surface-1)), var(--surface-1));
+  box-shadow: var(--shadow-card);
+}
+.wallet-callout > div { display: grid; gap: 4px; }
+.wallet-callout strong { color: var(--text-primary); font-size: .95rem; }
+.wallet-callout span { color: var(--text-secondary); font-size: .8rem; }
+
 /* ==========================================================================
    Cards, grid, controls
    ========================================================================== */
@@ -370,6 +386,36 @@ select.mono, input.mono { font-family: ui-monospace, SFMono-Regular, Menlo, mono
 .btn-icon { padding: 8px 10px; line-height: 1; }
 
 .btn-row { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 18px; }
+
+/* Guided onboarding and transactions */
+.action-title { margin-top: 7px; font-size: 1.08rem; color: var(--text-primary); text-transform: none; letter-spacing: 0; }
+.action-steps { margin-top: 20px; display: grid; }
+.action-step { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; position: relative; padding-bottom: 24px; }
+.action-step:not(:last-child)::before { content: ''; position: absolute; top: 34px; bottom: 0; left: 16px; width: 1px; background: var(--border-strong); }
+.step-number { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--border-strong); background: var(--surface-sunken); color: var(--gold); font-size: .8rem; font-weight: 850; position: relative; z-index: 1; }
+.action-step.is-done .step-number { background: color-mix(in srgb, var(--status-good) 16%, var(--surface-sunken)); border-color: var(--status-good); color: var(--status-good-text); }
+.step-heading { min-height: 34px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.step-heading h3 { margin: 0; font-size: .92rem; }
+.step-content > p { margin: 2px 0 12px; color: var(--text-muted); font-size: .78rem; line-height: 1.55; }
+.step-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.balance-label { color: var(--text-secondary); font-size: .78rem; }
+.balance-label strong { color: var(--text-primary); }
+.field-grid { display: grid; grid-template-columns: minmax(130px, .65fr) minmax(220px, 1.35fr); gap: 12px; }
+.field-grid label { display: grid; gap: 6px; color: var(--text-secondary); font-size: .75rem; }
+.field-grid input { width: 100%; }
+.input-affix { display: flex; align-items: center; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--surface-sunken) 88%, transparent); overflow: hidden; }
+.input-affix:focus-within { outline: 2px solid var(--series-1); outline-offset: 1px; }
+.input-affix input { border: 0; outline: 0; border-radius: 0; background: transparent; }
+.input-affix > span { padding: 0 11px; color: var(--gold); font-size: .72rem; font-weight: 800; }
+.form-error { margin: 8px 0 0 !important; color: var(--status-critical) !important; }
+.claim-list { display: grid; gap: 10px; }
+.claim-list > div { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--surface-sunken) 62%, transparent); }
+.claim-list strong { font-size: .84rem; }
+.claim-list span { color: var(--text-muted); font-size: .74rem; line-height: 1.45; }
+.claim-list .btn { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+.help-box { display: grid; gap: 4px; margin-top: 14px; padding: 14px; border-radius: var(--radius-sm); background: var(--accent-wash); border-left: 3px solid var(--teal); }
+.help-box strong { font-size: .8rem; }
+.help-box span { color: var(--text-secondary); font-size: .76rem; }
 
 /* Segmented chart/table toggle */
 .seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; flex-shrink: 0; background: var(--surface-sunken); }
@@ -538,4 +584,8 @@ table.data tbody tr:hover { background: rgba(22, 220, 197, .045); }
   .intro-emblem { display: none; }
   .field-row > label { min-width: 100%; }
   .field-row > select, .field-row > input { min-width: 0; width: 100%; }
+  .wallet-callout { align-items: stretch; flex-direction: column; }
+  .field-grid { grid-template-columns: 1fr; }
+  .claim-list > div { grid-template-columns: 1fr; }
+  .claim-list .btn { grid-column: 1; grid-row: auto; margin-top: 6px; }
 }

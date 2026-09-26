@@ -9,10 +9,10 @@ import { ActionsPanel } from '../components/ActionsPanel';
 import { CONTRACT_ADDRESS } from '../lib/contract';
 
 const TABS: TabDef[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'tiers', label: 'Tiers & benefits' },
-  { id: 'protocol', label: 'Protocol' },
-  { id: 'actions', label: 'Actions' },
+  { id: 'overview', label: 'Dashboard' },
+  { id: 'tiers', label: 'Rewards' },
+  { id: 'protocol', label: 'Contract details' },
+  { id: 'actions', label: 'Get started' },
 ];
 
 function shortAddress(value: string): string {
@@ -27,8 +27,8 @@ function initialTab(): string {
 
 export default function App() {
   const {
-    state, busy, txMessage, reload, selectAccount,
-    activate, claimRoi, claimWeekly, withdrawPrincipal,
+    state, busy, txMessage, reload, connectWallet, selectAccount,
+    requestTestUsdt, approveInvestment, activate, claimRoi, claimWeekly, withdrawPrincipal,
   } = useLio();
   const { theme, toggle } = useTheme();
   const [tab, setTab] = useState(initialTab);
@@ -57,7 +57,7 @@ export default function App() {
             <div className="topbar-actions">
               <span className="net-chip">
                 <span className={`net-dot ${isDown ? 'is-down' : 'is-live'}`} aria-hidden="true" />
-                {isDown ? 'Disconnected' : `Chain ${state.chainId}`}
+                {isDown ? 'Unavailable' : state.chainId === '97' ? 'BSC Testnet' : `Chain ${state.chainId}`}
               </span>
               <span className="net-chip mono" title={CONTRACT_ADDRESS}>
                 {shortAddress(CONTRACT_ADDRESS)}
@@ -80,9 +80,9 @@ export default function App() {
       <main className="content">
         <section className="dashboard-intro" aria-labelledby="dashboard-title">
           <div>
-            <span className="eyebrow">LIVE PROTOCOL</span>
-            <h1 id="dashboard-title">Growth at a glance</h1>
-            <p>Investment, rewards, team performance and protocol liquidity—connected in one transparent view.</p>
+            <span className="eyebrow">THE LIO · BSC TESTNET</span>
+            <h1 id="dashboard-title">Your growth, clearly tracked</h1>
+            <p>Follow your investment, monthly returns, referral rewards and team progress from one secure dashboard.</p>
           </div>
           <div className="intro-emblem" aria-hidden="true">
             <span>THE</span>
@@ -104,10 +104,21 @@ export default function App() {
           </div>
         )}
 
-        {/* Filters sit in one row above everything they scope. */}
+        {state.status === 'ready' && state.accounts.length === 0 && (
+          <div className="wallet-callout">
+            <div>
+              <strong>Connect your wallet to get started</strong>
+              <span>Use BSC Testnet only. Test tokens have no real-world value.</span>
+            </div>
+            <button type="button" className="btn btn-primary" onClick={connectWallet} disabled={busy}>
+              Connect wallet
+            </button>
+          </div>
+        )}
+
         {state.accounts.length > 0 && (
           <div className="filter-bar">
-            <span className="filter-label">Acting as</span>
+            <span className="filter-label">Connected wallet</span>
             <select
               className="mono"
               value={state.account}
@@ -119,7 +130,7 @@ export default function App() {
               ))}
             </select>
             <button type="button" className="btn" onClick={reload} disabled={busy}>
-              Refresh
+              Refresh data
             </button>
           </div>
         )}
@@ -141,11 +152,15 @@ export default function App() {
             {tab === 'protocol' && <ProtocolTab state={state} />}
             {tab === 'actions' && state.config && (
               <ActionsPanel
-                accounts={state.accounts}
                 account={state.account}
+                treasury={state.config.treasury}
                 profile={state.profile}
                 busy={busy}
                 minimumInvestment={state.config.minimumInvestment}
+                paymentBalance={state.paymentBalance}
+                paymentAllowance={state.paymentAllowance}
+                onRequestTokens={requestTestUsdt}
+                onApprove={approveInvestment}
                 onActivate={activate}
                 onClaimRoi={claimRoi}
                 onClaimWeekly={claimWeekly}

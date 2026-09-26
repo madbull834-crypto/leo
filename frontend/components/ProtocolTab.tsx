@@ -1,5 +1,5 @@
 import { Meter } from './ui/Meter';
-import { CONTRACT_ADDRESS, DEPLOYMENT, RPC_URL } from '../lib/contract';
+import { CONTRACT_ADDRESS, DEPLOYMENT, PAYMENT_ASSET_DECIMALS, PAYMENT_ASSET_SYMBOL, RPC_URL } from '../lib/contract';
 import { formatAddress, formatBps, formatDuration, formatTimestamp, formatUnitsRaw } from '../lib/format';
 import { compact, toNumber } from '../lib/viz';
 import { ACCOUNT_STATUS, type UserProfile } from '../types/lio';
@@ -17,6 +17,8 @@ function Item({ label, value }: { label: string; value: React.ReactNode }) {
 export function ProtocolTab({ state }: { state: LioState }) {
   const { config, profile } = state;
   if (!config) return null;
+  const scale = 10 ** PAYMENT_ASSET_DECIMALS;
+  const asset = (value: bigint | undefined) => toNumber(value) / scale;
 
   return (
     <>
@@ -24,8 +26,8 @@ export function ProtocolTab({ state }: { state: LioState }) {
         <section className="card span-8">
           <div className="card-head">
             <div>
-              <h2 className="card-title">Protocol configuration</h2>
-              <p className="card-sub">Live values read from LioCore</p>
+              <h2 className="card-title">Plan settings</h2>
+              <p className="card-sub">Verified live values from the smart contract</p>
             </div>
             {config.paused ? (
               <span className="pill pill-warn"><span className="pill-icon">⏸</span>Paused</span>
@@ -39,7 +41,7 @@ export function ProtocolTab({ state }: { state: LioState }) {
               <Item label="Payment asset" value={formatAddress(config.paymentAsset)} />
               <Item label="Minimum investment" value={formatUnitsRaw(config.minimumInvestment)} />
               <Item label="Direct referral" value={formatBps(config.directReferralBps)} />
-              <Item label="Claim deduction" value={formatBps(config.claimDeductionBps)} />
+              <Item label="Fee on ROI claims" value={formatBps(config.claimDeductionBps)} />
               <Item label="Lock duration" value={formatDuration(config.lockDuration)} />
               <Item label="ROI range" value={`${formatBps(config.roiMinBps)} - ${formatBps(config.roiMaxBps)}`} />
               <Item label="ROI strategy" value={config.roiStrategyId.toString()} />
@@ -51,21 +53,21 @@ export function ProtocolTab({ state }: { state: LioState }) {
         <section className="card span-4">
           <div className="card-head">
             <div>
-              <h2 className="card-title">Treasury</h2>
-              <p className="card-sub">Liquidity against recorded liabilities</p>
+              <h2 className="card-title">Reward reserve</h2>
+              <p className="card-sub">Funds available to cover member payouts</p>
             </div>
           </div>
           <div className="card-body">
             <div className="hero">
-              <span className="hero-value">{compact(toNumber(config.availableLiquidity))}</span>
-              <span className="hero-unit">available</span>
+              <span className="hero-value">{compact(asset(config.availableLiquidity))}</span>
+              <span className="hero-unit">{PAYMENT_ASSET_SYMBOL} available</span>
             </div>
             <Meter
-              name="Liabilities vs balance"
-              value={toNumber(config.totalLiabilities)}
-              limit={Math.max(toNumber(config.treasuryBalance), 1)}
-              display={`${compact(toNumber(config.totalLiabilities))} / ${compact(toNumber(config.treasuryBalance))}`}
-              foot="releasePayout reverts when a payout exceeds available liquidity"
+              name="Committed rewards vs reserve"
+              value={asset(config.totalLiabilities)}
+              limit={Math.max(asset(config.treasuryBalance), 1)}
+              display={`${compact(asset(config.totalLiabilities))} / ${compact(asset(config.treasuryBalance))}`}
+              foot="The contract blocks payouts that are not fully funded"
             />
           </div>
         </section>
@@ -76,7 +78,7 @@ export function ProtocolTab({ state }: { state: LioState }) {
           <div className="card-head">
             <div>
               <h2 className="card-title">Deployment</h2>
-              <p className="card-sub">Written by scripts/deploy.ts</p>
+              <p className="card-sub">Network and contract information</p>
             </div>
           </div>
           <div className="card-body">
@@ -92,8 +94,8 @@ export function ProtocolTab({ state }: { state: LioState }) {
         <section className="card span-6">
           <div className="card-head">
             <div>
-              <h2 className="card-title">Raw profile</h2>
-              <p className="card-sub">Every UserProfile field for the selected account</p>
+              <h2 className="card-title">Account details</h2>
+              <p className="card-sub">Your complete on-chain position record</p>
             </div>
           </div>
           <div className="card-body table-scroll">

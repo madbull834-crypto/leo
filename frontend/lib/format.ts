@@ -1,10 +1,12 @@
-/**
- * The local native-asset demo uses one smallest unit per business dollar. A
- * production token UI should format these values with that token's decimals.
- */
+import { formatUnits } from 'ethers';
+import { PAYMENT_ASSET_DECIMALS, PAYMENT_ASSET_SYMBOL } from './contract';
+
 export function formatUnitsRaw(value: bigint | undefined): string {
   if (value === undefined) return '-';
-  return value.toLocaleString('en-US');
+  const [whole, fraction = ''] = formatUnits(value, PAYMENT_ASSET_DECIMALS).split('.');
+  const readable = Number(whole).toLocaleString('en-US');
+  const trimmedFraction = fraction.replace(/0+$/, '').slice(0, 2);
+  return `${readable}${trimmedFraction ? `.${trimmedFraction}` : ''} ${PAYMENT_ASSET_SYMBOL}`;
 }
 
 export function formatBps(value: bigint | undefined): string {
