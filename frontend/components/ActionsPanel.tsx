@@ -44,6 +44,7 @@ export function ActionsPanel({
   onClaimRoi,
   onClaimWeekly,
   onWithdraw,
+  isTestnet,
 }: {
   account: string;
   treasury: string;
@@ -58,6 +59,7 @@ export function ActionsPanel({
   onClaimRoi: () => void;
   onClaimWeekly: () => void;
   onWithdraw: () => void;
+  isTestnet: boolean;
 }) {
   const [referrer, setReferrer] = useState(treasury);
   const [amount, setAmount] = useState(formatUnits(minimumInvestment, PAYMENT_ASSET_DECIMALS));
@@ -81,25 +83,27 @@ export function ActionsPanel({
       <section className="card span-7 action-card">
         <div className="card-head">
           <div>
-            <span className="eyebrow">TESTNET SETUP</span>
+            <span className="eyebrow">{isTestnet ? 'TESTNET SETUP' : 'MAINNET'}</span>
             <h2 className="card-title action-title">Start your position</h2>
             <p className="card-sub">Complete these steps in order. Your wallet confirms every transaction.</p>
           </div>
         </div>
 
         <div className="action-steps">
-          <Step number={1} title="Get test funds"
-            text={`Receive 10,000 free ${PAYMENT_ASSET_SYMBOL}. These tokens have no real-world value.`}
-            done={paymentBalance > 0n}>
-            <div className="step-actions">
-              <button type="button" className="btn" disabled={busy || !account} onClick={onRequestTokens}>
-                Get 10,000 {PAYMENT_ASSET_SYMBOL}
-              </button>
-              <span className="balance-label">Balance: <strong>{formatUnitsRaw(paymentBalance)}</strong></span>
-            </div>
-          </Step>
+          {isTestnet && (
+            <Step number={1} title="Get test funds"
+              text={`Receive 10,000 free ${PAYMENT_ASSET_SYMBOL}. These tokens have no real-world value.`}
+              done={paymentBalance > 0n}>
+              <div className="step-actions">
+                <button type="button" className="btn" disabled={busy || !account} onClick={onRequestTokens}>
+                  Get 10,000 {PAYMENT_ASSET_SYMBOL}
+                </button>
+                <span className="balance-label">Balance: <strong>{formatUnitsRaw(paymentBalance)}</strong></span>
+              </div>
+            </Step>
+          )}
 
-          <Step number={2} title="Choose your investment"
+          <Step number={isTestnet ? 2 : 1} title="Choose your investment"
             text={`Minimum ${formatUnitsRaw(minimumInvestment)}. Enter the wallet that referred you.`}
             done={meetsMinimum && validReferrer}>
             <div className="field-grid">
@@ -123,7 +127,7 @@ export function ActionsPanel({
             {referrer && !validReferrer && <p className="form-error">Use a valid wallet other than your own.</p>}
           </Step>
 
-          <Step number={3} title="Approve and activate"
+          <Step number={isTestnet ? 3 : 2} title="Approve and activate"
             text={`Approval lets THE LIOX transfer only the ${PAYMENT_ASSET_SYMBOL} amount you enter.`}
             done={isActive}>
             <div className="step-actions">

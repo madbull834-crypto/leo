@@ -6,7 +6,15 @@ import "./LioClaim.sol";
 contract TheLio is LioClaim {
     event BusinessVolumeUpdated(address indexed user, uint256 leftBusiness, uint256 rightBusiness, uint256 freshBusiness, uint256 timestamp);
 
-    constructor(address _treasury, address _paymentAsset, uint256 _minimumInvestment) LioCore(_treasury, _paymentAsset, _minimumInvestment) {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(address _treasury, address _paymentAsset, uint256 _minimumInvestment) external initializer {
+        __LioCore_init(_treasury, _paymentAsset, _minimumInvestment);
+        __LioTreasury_init();
+
         uint256 unit = businessUnit;
         // THE LIOX weekly rewards. Thresholds are TOTAL team business; the
         // 50/50 leg ratio is enforced in computeCurrentTier, which matches on
@@ -43,11 +51,11 @@ contract TheLio is LioClaim {
         emit BusinessVolumeUpdated(user, leftVolume, rightVolume, freshVolume, block.timestamp);
     }
 
-    function claimForUser(address user) external {
+    function claimForUser(address user) external whenNotPaused {
         claimROI(user);
     }
 
-    function claimWeeklyForUser(address user) external {
+    function claimWeeklyForUser(address user) external whenNotPaused {
         claimWeeklyReward(user);
     }
 

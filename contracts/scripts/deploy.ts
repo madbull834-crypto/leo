@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import { ethers, network, upgrades } from "hardhat";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -20,10 +20,18 @@ async function main() {
   console.log(`Deployer: ${deployer.address}`);
 
   const factory = await ethers.getContractFactory("TheLio");
-  const theLio = await factory.deploy(treasury, PAYMENT_ASSET, MINIMUM_INVESTMENT);
+  const theLio = await upgrades.deployProxy(
+    factory,
+    [treasury, PAYMENT_ASSET, MINIMUM_INVESTMENT],
+    { kind: "transparent", initializer: "initialize" },
+  );
   await theLio.deployed();
+  const implementation = await upgrades.erc1967.getImplementationAddress(theLio.address);
+  const proxyAdmin = await upgrades.erc1967.getAdminAddress(theLio.address);
 
-  console.log(`TheLio deployed at ${theLio.address}`);
+  console.log(`TheLio proxy:          ${theLio.address}`);
+  console.log(`TheLio implementation: ${implementation}`);
+  console.log(`ProxyAdmin:            ${proxyAdmin}`);
 
   const chainId = (await ethers.provider.getNetwork()).chainId;
   const artifact = JSON.parse(
@@ -48,6 +56,8 @@ async function main() {
         chainId,
         network: network.name,
         address: theLio.address,
+        implementation,
+        proxyAdmin,
         treasury,
         paymentAsset: PAYMENT_ASSET,
         minimumInvestment: MINIMUM_INVESTMENT,

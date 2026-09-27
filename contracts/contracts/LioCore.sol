@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
 
-abstract contract LioCore is AccessControl, Pausable {
+abstract contract LioCore is Initializable, AccessControlUpgradeable, PausableUpgradeable {
     using SafeERC20 for IERC20;
 
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -24,7 +25,7 @@ abstract contract LioCore is AccessControl, Pausable {
     uint256 public roiMaxBps;
     uint256 public roiStrategyId;
     uint256 public currentWeekId;
-    uint256 public immutable businessUnit;
+    uint256 public businessUnit;
     bool public planConfigurationLocked;
     uint256 public totalLiabilities;
     uint256 public treasuryBalance;
@@ -33,10 +34,14 @@ abstract contract LioCore is AccessControl, Pausable {
     event TreasuryUpdated(address indexed oldTreasury, address indexed newTreasury, uint256 timestamp);
     event PaymentAssetUpdated(address indexed oldAsset, address indexed newAsset, uint256 timestamp);
 
-    constructor(address _treasury, address _paymentAsset, uint256 _minimumInvestment) {
+    function __LioCore_init(address _treasury, address _paymentAsset, uint256 _minimumInvestment) internal onlyInitializing {
         require(_treasury != address(0), "LioCore: zero treasury");
         require(_minimumInvestment > 0, "LioCore: zero minimum");
         require(_minimumInvestment % 100 == 0, "LioCore: minimum must represent $100");
+
+        __AccessControl_init();
+        __Pausable_init();
+
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(OPERATOR_ROLE, msg.sender);
         _grantRole(REWARD_MANAGER_ROLE, msg.sender);

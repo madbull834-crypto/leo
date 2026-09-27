@@ -4,6 +4,7 @@
   "network": "bscMainnet",
   "address": "0x3C97360716E3Df6976Dd1cF93d537579041253C6",
   "implementation": "0x6ef0b48D3E3BB045f7a3f29Cb03768D14BF28cC5",
+  "unusedImplementation": "0xff6adCDC693287933EF8580b5a63E70F072b5110",
   "proxyAdmin": "0x2b898FFFDfdB40FC599e02827519B8921444c4B9",
   "proxyAdminOwner": "0xeEDb3e5BF8551ab734347fDC8aF9286eEE26773C",
   "treasury": "0x08496Cb6D3920FE05BF504ea2C6663f8Fd554bD7",

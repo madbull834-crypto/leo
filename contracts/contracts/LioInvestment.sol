@@ -64,7 +64,7 @@ abstract contract LioInvestment is LioCore {
         emit UserActivated(msg.sender, amount, activationTimestamp, unlockTimestamp);
     }
 
-    function withdrawPrincipal() external {
+    function withdrawPrincipal() external whenNotPaused {
         UserProfile storage user = users[msg.sender];
         require(user.active, "LioInvestment: inactive user");
         require(block.timestamp >= user.unlockTimestamp, "LioInvestment: principal locked");

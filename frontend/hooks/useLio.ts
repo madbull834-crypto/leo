@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { parseUnits } from 'ethers';
 import {
   CONTRACT_ADDRESS,
+  NETWORK_LABEL,
   PAYMENT_ASSET_DECIMALS,
   decodeError,
   ensureDeploymentNetwork,
@@ -248,7 +249,7 @@ export function useLio() {
       setState((prev) => ({
         ...prev,
         status: 'error',
-        message: 'BSC Testnet is not responding. Check your connection and try again.',
+        message: `${NETWORK_LABEL} is not responding. Check your connection and try again.`,
       }));
     }
   }, []);
@@ -284,7 +285,7 @@ export function useLio() {
       await ensureDeploymentNetwork();
       const accounts = await listBrowserAccounts(true);
       await load(accounts[0]);
-      setTxMessage('Wallet connected to BSC Testnet');
+      setTxMessage(`Wallet connected to ${NETWORK_LABEL}`);
     } catch (error) {
       setTxMessage(`Connection failed: ${decodeError(error)}`);
     } finally {
@@ -293,7 +294,10 @@ export function useLio() {
   }, [load]);
 
   const getSigner = useCallback(async () => {
-    if (hasInjectedWallet()) return getBrowserSigner();
+    if (hasInjectedWallet()) {
+      await ensureDeploymentNetwork();
+      return getBrowserSigner();
+    }
     return getLocalSigner(state.account);
   }, [state.account]);
 

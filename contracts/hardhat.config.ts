@@ -1,6 +1,7 @@
 import { HardhatUserConfig, subtask } from "hardhat/config";
 import { TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD } from "hardhat/builtin-tasks/task-names";
 import "@nomicfoundation/hardhat-toolbox";
+import "@openzeppelin/hardhat-upgrades";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -30,7 +31,9 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        // Favor deployable bytecode size: TheLio combines the full protocol
+        // surface with UUPS upgrade machinery and must stay below EIP-170.
+        runs: 1,
       },
       viaIR: true,
     },
@@ -46,6 +49,21 @@ const config: HardhatUserConfig = {
       url: process.env.BSC_TESTNET_RPC_URL || "https://bsc-testnet-dataseed.bnbchain.org",
       chainId: 97,
       accounts: privateKey ? [privateKey] : [],
+    },
+    bscMainnet: {
+      url: process.env.BSC_MAINNET_RPC_URL || "https://bsc-dataseed.bnbchain.org",
+      chainId: 56,
+      accounts: process.env.MAINNET_DEPLOYER_PRIVATE_KEY
+        ? [process.env.MAINNET_DEPLOYER_PRIVATE_KEY.trim().startsWith("0x")
+          ? process.env.MAINNET_DEPLOYER_PRIVATE_KEY.trim()
+          : `0x${process.env.MAINNET_DEPLOYER_PRIVATE_KEY.trim()}`]
+        : [],
+    },
+  },
+  etherscan: {
+    apiKey: {
+      bsc: process.env.BSCSCAN_API_KEY || "",
+      bscTestnet: process.env.BSCSCAN_API_KEY || "",
     },
   },
 };

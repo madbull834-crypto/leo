@@ -1,11 +1,15 @@
 import { expect } from "chai";
-import { ethers, network } from "hardhat";
+import { ethers, network, upgrades } from "hardhat";
 
 describe("TheLio business plan", function () {
   async function deploy() {
     const [admin, alice, bob, carol] = await ethers.getSigners();
     const factory = await ethers.getContractFactory("TheLio");
-    const lio = await factory.deploy(admin.address, ethers.constants.AddressZero, 100);
+    const lio = await upgrades.deployProxy(
+      factory,
+      [admin.address, ethers.constants.AddressZero, 100],
+      { kind: "transparent", initializer: "initialize" },
+    );
     await lio.deployed();
     await lio.fundTreasury(1_000_000, { value: 1_000_000 });
     return { lio, admin, alice, bob, carol };
@@ -162,7 +166,11 @@ describe("TheLio business plan", function () {
     const token = await tokenFactory.deploy();
     await token.deployed();
     const lioFactory = await ethers.getContractFactory("TheLio");
-    const lio = await lioFactory.deploy(admin.address, token.address, 100_000_000);
+    const lio = await upgrades.deployProxy(
+      lioFactory,
+      [admin.address, token.address, 100_000_000],
+      { kind: "transparent", initializer: "initialize" },
+    );
     await lio.deployed();
 
     await token.mint(admin.address, 100_000_000);
@@ -190,5 +198,55 @@ describe("TheLio business plan", function () {
 
     await token.connect(alice).faucet();
     expect(await token.balanceOf(alice.address)).to.equal(10_000_000_000);
+  });
+
+  it("upgrades through ProxyAdmin while preserving state and enforcing ownership", async function () {
+    const { lio, admin, alice } = await deploy();
+    await lio.connect(alice).activateInvestor(admin.address, 1_000, { value: 1_000 });
+
+    const proxyAddress = lio.address;
+    const implementationBefore = await upgrades.erc1967.getImplementationAddress(proxyAddress);
+    const v2Factory = await ethers.getContractFactory("TheLioV2");
+    const proxyAdminAddress = await upgrades.erc1967.getAdminAddress(proxyAddress);
+    const proxyAdmin = new ethers.Contract(
+      proxyAdminAddress,
+      ["function owner() view returns (address)", "function upgrade(address proxy, address implementation)"],
+      admin,
+    );
+    expect(await proxyAdmin.owner()).to.equal(admin.address);
+
+    const upgraded = await upgrades.upgradeProxy(proxyAddress, v2Factory, { kind: "transparent" });
+    await upgraded.deployed();
+    const implementationAfter = await upgrades.erc1967.getImplementationAddress(proxyAddress);
+
+    expect(upgraded.address).to.equal(proxyAddress);
+    expect(implementationAfter).not.to.equal(implementationBefore);
+    expect(await upgraded.version()).to.equal(2);
+    expect((await upgraded.getUserProfile(alice.address)).principal).to.equal(1_000);
+    expect(await upgraded.businessUnit()).to.equal(1);
+
+    await expect(proxyAdmin.connect(alice).upgrade(proxyAddress, implementationAfter)).to.be.revertedWith(
+      "Ownable: caller is not the owner",
+    );
+
+    const implementation = v2Factory.attach(implementationAfter);
+    await expect(
+      implementation.initialize(admin.address, ethers.constants.AddressZero, 100),
+    ).to.be.reverted;
+  });
+
+  it("stops every user payout path while paused and still accepts treasury funding", async function () {
+    const { lio, admin, alice } = await deploy();
+    await lio.connect(alice).activateInvestor(admin.address, 5_000, { value: 5_000 });
+    await lio.updateUserBusiness(alice.address, 2_500, 2_500, 0);
+    await network.provider.send("evm_increaseTime", [183 * 86_400]);
+    await network.provider.send("evm_mine");
+    await lio.pause();
+
+    await expect(lio.connect(alice).claimForUser(alice.address)).to.be.revertedWith("Pausable: paused");
+    await expect(lio.connect(alice).claimWeeklyForUser(alice.address)).to.be.revertedWith("Pausable: paused");
+    await expect(lio.connect(alice).claimMonthlyInvestment(alice.address, 1)).to.be.revertedWith("Pausable: paused");
+    await expect(lio.connect(alice).withdrawPrincipal()).to.be.revertedWith("Pausable: paused");
+    await expect(lio.fundTreasury(100, { value: 100 })).not.to.be.reverted;
   });
 });

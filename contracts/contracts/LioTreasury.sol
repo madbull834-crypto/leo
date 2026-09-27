@@ -3,16 +3,20 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 import "./LioBenefits.sol";
 
-abstract contract LioTreasury is LioBenefits, ReentrancyGuard {
+abstract contract LioTreasury is LioBenefits, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
     event TreasuryFunded(address indexed asset, uint256 amount, uint256 timestamp);
     event PayoutExecuted(address indexed asset, address indexed recipient, uint256 amount, uint256 timestamp);
     event InsufficientLiquidity(address indexed asset, uint256 required, uint256 available, uint256 timestamp);
+
+    function __LioTreasury_init() internal onlyInitializing {
+        __ReentrancyGuard_init();
+    }
 
     function fundTreasury(uint256 amount) external payable {
         require(amount > 0, "LioTreasury: amount invalid");

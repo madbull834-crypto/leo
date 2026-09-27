@@ -22,6 +22,10 @@ token. Any test wallet can call `faucet()` to receive 10,000 tUSDT, then approve
 the `TheLio` contract before activating an investment. The faucet and unrestricted
 `mint` function are intentionally unsafe and must never be used on mainnet.
 
+BSC mainnet uses a separate guarded deployment path with no test token or seed
+step. See [`docs/mainnet-deployment.md`](docs/mainnet-deployment.md) for release
+gates, environment variables, role handoff, verification, and launch checks.
+
 The contract keeps principal and earned rewards as liabilities. Fund the treasury
 with enough surplus before activation so the one-time 5% referral commission can
 be paid immediately without using locked principal. ROI, weekly rewards, expense
@@ -60,6 +64,12 @@ npm run dev             # http://localhost:5173
 `frontend/config/deployment.json`, which is how the frontend discovers the ABI
 and contract address. Re-run it whenever you restart the Hardhat node, since a
 fresh node resets the chain.
+
+`TheLio` is deployed behind an ERC-1967 Transparent proxy. The deployment
+metadata records the stable proxy address used by the frontend, the replaceable
+implementation address, and the dedicated `ProxyAdmin`. Only the `ProxyAdmin`
+owner can upgrade the implementation. The implementation disables direct
+initialization; all setup must happen atomically through `deployProxy`.
 
 The dashboard signs transactions with Hardhat's unlocked dev accounts (picked in
 the "Acting as" dropdown), so no browser wallet is required.

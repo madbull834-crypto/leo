@@ -10,6 +10,13 @@ export const PAYMENT_ASSET_DECIMALS: number =
   (deployment as { paymentAssetDecimals?: number }).paymentAssetDecimals ?? 0;
 export const PAYMENT_ASSET_SYMBOL: string =
   (deployment as { paymentAssetSymbol?: string }).paymentAssetSymbol ?? 'units';
+export const DEPLOYMENT_CHAIN_ID = Number((deployment as { chainId: number }).chainId);
+export const IS_TESTNET = DEPLOYMENT_CHAIN_ID === 97;
+export const NETWORK_LABEL = DEPLOYMENT_CHAIN_ID === 56
+  ? 'BSC Mainnet'
+  : DEPLOYMENT_CHAIN_ID === 97
+    ? 'BSC Testnet'
+    : `Chain ${DEPLOYMENT_CHAIN_ID}`;
 
 const PAYMENT_TOKEN_ABI = [
   'function balanceOf(address) view returns (uint256)',
@@ -73,7 +80,7 @@ export async function ensureDeploymentNetwork(): Promise<void> {
   const injected = (window as any).ethereum;
   if (!injected) throw new Error('Install MetaMask or another browser wallet to continue');
 
-  const chainId = Number((deployment as { chainId: number }).chainId);
+  const chainId = DEPLOYMENT_CHAIN_ID;
   const chainIdHex = `0x${chainId.toString(16)}`;
   try {
     await injected.request({
@@ -81,15 +88,20 @@ export async function ensureDeploymentNetwork(): Promise<void> {
       params: [{ chainId: chainIdHex }],
     });
   } catch (error: any) {
-    if (error?.code !== 4902 || chainId !== 97) throw error;
+    if (error?.code !== 4902 || (chainId !== 56 && chainId !== 97)) throw error;
+    const isMainnet = chainId === 56;
     await injected.request({
       method: 'wallet_addEthereumChain',
       params: [{
         chainId: chainIdHex,
-        chainName: 'BSC Testnet',
-        nativeCurrency: { name: 'Test BNB', symbol: 'tBNB', decimals: 18 },
+        chainName: isMainnet ? 'BNB Smart Chain' : 'BSC Testnet',
+        nativeCurrency: {
+          name: isMainnet ? 'BNB' : 'Test BNB',
+          symbol: isMainnet ? 'BNB' : 'tBNB',
+          decimals: 18,
+        },
         rpcUrls: [RPC_URL],
-        blockExplorerUrls: ['https://testnet.bscscan.com'],
+        blockExplorerUrls: [isMainnet ? 'https://bscscan.com' : 'https://testnet.bscscan.com'],
       }],
     });
   }

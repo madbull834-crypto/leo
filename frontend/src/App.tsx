@@ -7,7 +7,7 @@ import { OverviewTab } from '../components/OverviewTab';
 import { TiersTab } from '../components/TiersTab';
 import { ProtocolTab } from '../components/ProtocolTab';
 import { ActionsPanel } from '../components/ActionsPanel';
-import { CONTRACT_ADDRESS } from '../lib/contract';
+import { CONTRACT_ADDRESS, IS_TESTNET, NETWORK_LABEL } from '../lib/contract';
 
 const TABS: TabDef[] = [
   { id: 'overview', label: 'Dashboard' },
@@ -58,7 +58,7 @@ export default function App() {
             <div className="topbar-actions">
               <span className="net-chip">
                 <span className={`net-dot ${isDown ? 'is-down' : 'is-live'}`} aria-hidden="true" />
-                {isDown ? 'Unavailable' : state.chainId === '97' ? 'BSC Testnet' : `Chain ${state.chainId}`}
+                {isDown ? 'Unavailable' : NETWORK_LABEL}
               </span>
               <span className="net-chip mono" title={CONTRACT_ADDRESS}>
                 {shortAddress(CONTRACT_ADDRESS)}
@@ -81,7 +81,7 @@ export default function App() {
       <main className="content">
         <section className="dashboard-intro" aria-labelledby="dashboard-title">
           <div>
-            <span className="eyebrow">THE LIOX · BSC TESTNET</span>
+            <span className="eyebrow">THE LIOX · {NETWORK_LABEL.toUpperCase()}</span>
             <h1 id="dashboard-title">Your growth, clearly tracked</h1>
             <p>Follow your investment, monthly returns, referral rewards and team progress from one secure dashboard.</p>
           </div>
@@ -109,7 +109,9 @@ export default function App() {
           <div className="wallet-callout">
             <div>
               <strong>Connect your wallet to get started</strong>
-              <span>Use BSC Testnet only. Test tokens have no real-world value.</span>
+              <span>{IS_TESTNET
+                ? 'Use BSC Testnet only. Test tokens have no real-world value.'
+                : 'Use BSC Mainnet only. Transactions use assets with real-world value.'}</span>
             </div>
             <button type="button" className="btn btn-primary" onClick={connectWallet} disabled={busy}>
               Connect wallet
@@ -166,6 +168,7 @@ export default function App() {
                 onClaimRoi={claimRoi}
                 onClaimWeekly={claimWeekly}
                 onWithdraw={withdrawPrincipal}
+                isTestnet={IS_TESTNET}
               />
             )}
           </div>

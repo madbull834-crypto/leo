@@ -16,7 +16,7 @@ abstract contract LioClaim is LioTreasury {
         uint256 periodId
     );
 
-    function claimMonthlyInvestment(address user, uint256 periodId) external {
+    function claimMonthlyInvestment(address user, uint256 periodId) external whenNotPaused {
         require(msg.sender == user || hasRole(OPERATOR_ROLE, msg.sender), "LioClaim: unauthorized caller");
         require(!claimPeriodUsed[user][periodId], "LioClaim: already claimed for period");
         uint256 beforeClaimed = users[user].roiClaimed;

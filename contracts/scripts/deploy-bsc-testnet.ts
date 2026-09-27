@@ -1,4 +1,4 @@
-import { ethers, network } from "hardhat";
+import { ethers, network, upgrades } from "hardhat";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -30,9 +30,17 @@ async function main() {
 
   const lioFactory = await ethers.getContractFactory("TheLio");
   const minimumInvestment = units("100");
-  const lio = await lioFactory.deploy(deployer.address, token.address, minimumInvestment);
+  const lio = await upgrades.deployProxy(
+    lioFactory,
+    [deployer.address, token.address, minimumInvestment],
+    { kind: "transparent", initializer: "initialize" },
+  );
   await lio.deployed();
-  console.log(`TheLio:   ${lio.address}`);
+  const implementation = await upgrades.erc1967.getImplementationAddress(lio.address);
+  const proxyAdmin = await upgrades.erc1967.getAdminAddress(lio.address);
+  console.log(`TheLio proxy:          ${lio.address}`);
+  console.log(`TheLio implementation: ${implementation}`);
+  console.log(`ProxyAdmin:            ${proxyAdmin}`);
 
   const treasuryFunding = units("500000");
   await (await token.mint(deployer.address, treasuryFunding)).wait();
@@ -51,6 +59,8 @@ async function main() {
     chainId: 97,
     network: "bscTestnet",
     address: lio.address,
+    implementation,
+    proxyAdmin,
     treasury: deployer.address,
     paymentAsset: token.address,
     paymentAssetSymbol: "tUSDT",
