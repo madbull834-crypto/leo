@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLio } from '../hooks/useLio';
 import { useTheme } from '../hooks/useTheme';
 import { Tabs, type TabDef } from '../components/ui/Tabs';
+import { LioxMark } from '../components/ui/LioxMark';
 import { OverviewTab } from '../components/OverviewTab';
 import { TiersTab } from '../components/TiersTab';
 import { ProtocolTab } from '../components/ProtocolTab';
@@ -47,10 +48,10 @@ export default function App() {
         <div className="topbar-inner">
           <div className="topbar-main">
             <div className="brand">
-              <span className="brand-mark" aria-hidden="true"><span>L</span></span>
+              <LioxMark />
               <span className="brand-text">
-                <strong>THE LIO</strong>
-                <span>BUSINESS PROTOCOL</span>
+                <strong>THE LIOX</strong>
+                <span>BUILDING THE FUTURE OF WEB3</span>
               </span>
             </div>
 
@@ -80,13 +81,13 @@ export default function App() {
       <main className="content">
         <section className="dashboard-intro" aria-labelledby="dashboard-title">
           <div>
-            <span className="eyebrow">THE LIO · BSC TESTNET</span>
+            <span className="eyebrow">THE LIOX · BSC TESTNET</span>
             <h1 id="dashboard-title">Your growth, clearly tracked</h1>
             <p>Follow your investment, monthly returns, referral rewards and team progress from one secure dashboard.</p>
           </div>
           <div className="intro-emblem" aria-hidden="true">
             <span>THE</span>
-            <strong>LIO</strong>
+            <strong>LIOX</strong>
           </div>
         </section>
 

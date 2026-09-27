@@ -23,7 +23,7 @@ import type {
   WeeklyTier,
 } from '../types/lio';
 
-const WEEKLY_TIER_COUNT = 5;
+const WEEKLY_TIER_COUNT = 6;
 const EXPENSE_TIER_COUNT = 4;
 const TOUR_REWARD_COUNT = 4;
 
@@ -128,7 +128,11 @@ export function useLio() {
         contract.getAvailableLiquidity(),
       ]);
 
-      const weeklyTiers: WeeklyTier[] = await Promise.all(
+      // Only tiers the contract actually has configured. The count is read
+      // optimistically, so a deployment with fewer tiers than the plan (an
+      // older contract still on chain) yields empty rows that must not render
+      // as zero-height bars.
+      const weeklyTiersRaw: WeeklyTier[] = await Promise.all(
         Array.from({ length: WEEKLY_TIER_COUNT }, async (_, index) => {
           const tier = await contract.weeklyTiers(index);
           return {
@@ -139,6 +143,8 @@ export function useLio() {
           };
         }),
       );
+
+      const weeklyTiers = weeklyTiersRaw.filter((tier) => tier.enabled);
 
       const expenseTiers: ExpenseTier[] = await Promise.all(
         Array.from({ length: EXPENSE_TIER_COUNT }, async (_, index) => {

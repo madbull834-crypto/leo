@@ -74,7 +74,14 @@ export function inkOn(hexLuminanceIsDark: boolean): string {
   return hexLuminanceIsDark ? '#ffffff' : '#0b0b0b';
 }
 
-export const TIER_VARS = ['--tier-1', '--tier-2', '--tier-3', '--tier-4', '--tier-5'];
+/**
+ * Tier bars use a single hue. An ordinal ramp cannot seat six steps: the blue
+ * ramp's steps sit ~0.047 apart in lightness against a >= 0.06 gate, so no
+ * six-step subset clears it on the light surface. It would also double-encode,
+ * since bar length already shows the threshold - reached vs locked is carried
+ * by opacity instead.
+ */
+export const TIER_COLOR_VAR = '--series-1';
 
 /* --------------------------------------------------------------------------
    Bar paths: 4px rounded data-end, square at the baseline. A bar grows from

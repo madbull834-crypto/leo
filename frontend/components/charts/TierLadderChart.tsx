@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Tooltip, type TooltipState } from '../ui/Tooltip';
-import { barUp, compact, niceScale, TIER_VARS } from '../../lib/viz';
+import { barUp, compact, niceScale, TIER_COLOR_VAR } from '../../lib/viz';
 import { useChartWidth } from '../../hooks/useChartWidth';
 import type { WeeklyTier } from '../../types/lio';
 
@@ -64,7 +64,7 @@ export function TierLadderChart({
               <path
                 className={`mark${achieved > 0 && !isAchieved ? ' mark-dim' : ''}`}
                 d={barUp(cx - barW / 2, top, barW, height)}
-                fill={`var(${TIER_VARS[index] ?? TIER_VARS[4]})`}
+                fill={`var(${TIER_COLOR_VAR})`}
               />
               <rect
                 className="hit"
@@ -74,7 +74,7 @@ export function TierLadderChart({
                     x: cx, y: top,
                     title: `Tier ${tier.index + 1}`,
                     rows: [
-                      { label: 'Threshold', value: value.toLocaleString('en-US'), colorVar: TIER_VARS[index] },
+                      { label: 'Threshold', value: value.toLocaleString('en-US'), colorVar: TIER_COLOR_VAR },
                       { label: 'Weekly reward', value: Number(tier.reward).toLocaleString('en-US') },
                       { label: 'Status', value: isAchieved ? 'Reached' : 'Locked' },
                     ],

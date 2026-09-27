@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#083a34"/>
+      <stop offset="100%" stop-color="#041f2e"/>
+    </linearGradient>
+    <linearGradient id="mane" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0%" stop-color="#5eead4"/>
+      <stop offset="55%" stop-color="#16dcc5"/>
+      <stop offset="100%" stop-color="#12b8b0"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="10" fill="url(#tile)"/>
+  <g fill="url(#mane)">
+    <circle cx="16.0" cy="8.1" r="5"/>
+    <circle cx="21.08" cy="9.95" r="5"/>
+    <circle cx="23.78" cy="14.63" r="5"/>
+    <circle cx="22.84" cy="19.95" r="5"/>
+    <circle cx="18.7" cy="23.42" r="5"/>
+    <circle cx="13.3" cy="23.42" r="5"/>
+    <circle cx="9.16" cy="19.95" r="5"/>
+    <circle cx="8.22" cy="14.63" r="5"/>
+    <circle cx="10.92" cy="9.95" r="5"/>
+    <circle cx="16" cy="16" r="8.6"/>
+  </g>
+  <circle cx="10.9" cy="11.2" r="2.35" fill="#041f2e"/>
+  <circle cx="21.1" cy="11.2" r="2.35" fill="#041f2e"/>
+  <circle cx="16" cy="16.3" r="6.9" fill="#041f2e"/>
+  <circle cx="13.5" cy="14.9" r="1.3" fill="#f4c141"/>
+  <circle cx="18.5" cy="14.9" r="1.3" fill="#f4c141"/>
+  <path d="M16 18.1 l2.15 1.75 a2.15 2.15 0 0 1 -4.3 0 Z" fill="#f4c141"/>
+</svg>

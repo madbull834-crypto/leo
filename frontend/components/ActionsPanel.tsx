@@ -124,7 +124,7 @@ export function ActionsPanel({
           </Step>
 
           <Step number={3} title="Approve and activate"
-            text={`Approval lets THE LIO transfer only the ${PAYMENT_ASSET_SYMBOL} amount you enter.`}
+            text={`Approval lets THE LIOX transfer only the ${PAYMENT_ASSET_SYMBOL} amount you enter.`}
             done={isActive}>
             <div className="step-actions">
               <button type="button" className="btn"

@@ -1,6 +1,6 @@
 import { ChartCard } from './ui/ChartCard';
 import { TierLadderChart } from './charts/TierLadderChart';
-import { TIER_VARS, toNumber } from '../lib/viz';
+import { TIER_COLOR_VAR, toNumber } from '../lib/viz';
 import { PAYMENT_ASSET_DECIMALS, PAYMENT_ASSET_SYMBOL } from '../lib/contract';
 import type { LioState } from '../hooks/useLio';
 
@@ -30,7 +30,7 @@ export function TiersTab({ state }: { state: LioState }) {
           <tr key={row.index} className={index + 1 === achieved ? 'is-current' : undefined}>
             <td>
               <span className="swatch-cell">
-                <span className="legend-swatch" style={{ background: `var(${TIER_VARS[index]})` }} />
+                <span className="legend-swatch" style={{ background: `var(${TIER_COLOR_VAR})`, opacity: index < achieved ? 1 : 0.45 }} />
                 Tier {row.index + 1}
               </span>
             </td>

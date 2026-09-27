@@ -1,4 +1,4 @@
-/* THE LIO — emerald, teal and gold protocol identity */
+/* THE LIOX — emerald, teal and gold protocol identity */
 
 :root {
   color-scheme: dark;
@@ -138,20 +138,13 @@ body {
 
 .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
 
-.brand-mark {
+.liox-mark {
   width: 42px; height: 42px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 36% 32%, #45ffe5, var(--teal-deep) 58%, #003d37 60%);
-  border: 2px solid var(--gold);
-  color: var(--text-primary);
-  display: grid; place-items: center;
-  font-size: 1rem; font-weight: 900; letter-spacing: -0.05em;
+  border-radius: 12px;
   flex-shrink: 0;
-  position: relative;
+  border: 2px solid var(--gold);
   box-shadow: 0 0 0 3px rgba(22, 220, 197, 0.11), 0 0 22px rgba(22, 220, 197, 0.22);
 }
-.brand-mark::after { content: ''; position: absolute; width: 52px; height: 14px; border: 2px solid var(--gold); border-radius: 50%; transform: rotate(-30deg); }
-.brand-mark span { position: relative; z-index: 1; text-shadow: 0 1px 4px rgba(0,0,0,.7); }
 
 .brand-text { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
 .brand-text strong { font-size: 1.15rem; font-weight: 900; letter-spacing: 0.055em; color: var(--gold); }

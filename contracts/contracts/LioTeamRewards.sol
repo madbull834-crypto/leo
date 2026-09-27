@@ -31,7 +31,7 @@ abstract contract LioTeamRewards is LioReferral {
         uint256 leftSide = users[user].leftBusiness;
         uint256 rightSide = users[user].rightBusiness;
         uint256 current = 0;
-        uint256 maxTier = 5;
+        uint256 maxTier = 6;
         for (uint256 i = 0; i < maxTier; i++) {
             if (weeklyTiers[i].enabled) {
                 uint256 matchedBusiness = (leftSide < rightSide ? leftSide : rightSide) * 2;

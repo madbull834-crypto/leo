@@ -81,6 +81,37 @@ describe("TheLio business plan", function () {
     );
   });
 
+  it("matches the six weekly reward tiers in the LIOX plan", async function () {
+    const { lio, admin, alice } = await deploy();
+
+    // TOTAL team business -> weekly reward, straight from the plan's table.
+    // Each tier is reached on a 50/50 leg split of the total.
+    const plan = [
+      { total: 5_000, reward: 25 },
+      { total: 10_000, reward: 50 },
+      { total: 25_000, reward: 110 },
+      { total: 50_000, reward: 150 },
+      { total: 100_000, reward: 300 },
+      { total: 200_000, reward: 750 },
+    ];
+
+    for (const [index, row] of plan.entries()) {
+      const tier = await lio.weeklyTiers(index);
+      expect(tier.threshold, `tier ${index + 1} threshold`).to.equal(row.total);
+      expect(tier.reward, `tier ${index + 1} reward`).to.equal(row.reward);
+      expect(tier.enabled).to.equal(true);
+    }
+
+    // The 6th tier must actually be reachable - computeCurrentTier caps the loop.
+    await lio.connect(alice).activateInvestor(admin.address, 1_000, { value: 1_000 });
+    await lio.updateUserBusiness(alice.address, 100_000, 100_000, 0);
+    expect(await lio.getCurrentTier(alice.address)).to.equal(6);
+
+    const before = await ethers.provider.getBalance(lio.address);
+    await lio.connect(alice).claimWeeklyForUser(alice.address);
+    expect(before.sub(await ethers.provider.getBalance(lio.address))).to.equal(750);
+  });
+
   it("locks and then returns principal after six months", async function () {
     const { lio, admin, alice } = await deploy();
     await lio.connect(alice).activateInvestor(admin.address, 1_000, { value: 1_000 });

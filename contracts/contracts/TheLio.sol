@@ -8,11 +8,15 @@ contract TheLio is LioClaim {
 
     constructor(address _treasury, address _paymentAsset, uint256 _minimumInvestment) LioCore(_treasury, _paymentAsset, _minimumInvestment) {
         uint256 unit = businessUnit;
+        // THE LIOX weekly rewards. Thresholds are TOTAL team business; the
+        // 50/50 leg ratio is enforced in computeCurrentTier, which matches on
+        // min(leftLeg, rightLeg) * 2.
         setWeeklyTier(0, 5000 * unit, 25 * unit, true);
-        setWeeklyTier(1, 10000 * unit, 60 * unit, true);
-        setWeeklyTier(2, 25000 * unit, 150 * unit, true);
-        setWeeklyTier(3, 50000 * unit, 300 * unit, true);
-        setWeeklyTier(4, 200000 * unit, 750 * unit, true);
+        setWeeklyTier(1, 10000 * unit, 50 * unit, true);
+        setWeeklyTier(2, 25000 * unit, 110 * unit, true);
+        setWeeklyTier(3, 50000 * unit, 150 * unit, true);
+        setWeeklyTier(4, 100000 * unit, 300 * unit, true);
+        setWeeklyTier(5, 200000 * unit, 750 * unit, true);
 
         setExpenseTier(0, 10000 * unit, 250 * unit, true);
         setExpenseTier(1, 25000 * unit, 1000 * unit, true);

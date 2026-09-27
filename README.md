@@ -1,6 +1,6 @@
-# THE LIO
+# THE LIOX
 
-This repository contains the smart-contract architecture and implementation for THE LIO, built in line with the Phase 1-3 business requirements and architecture decisions captured during requirements analysis.
+This repository contains the smart-contract architecture and implementation for THE LIOX, built in line with the Phase 1-3 business requirements and architecture decisions captured during requirements analysis.
 
 ## Monorepo layout
 
