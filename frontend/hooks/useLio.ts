@@ -50,6 +50,8 @@ export interface LioState {
   config?: ProtocolConfig;
   profile?: UserProfile;
   tier?: bigint;
+  lastRoiAccrualTimestamp: bigint;
+  selectedMonthlyRoiBps: bigint;
   investors: Investor[];
   weeklyTiers: WeeklyTier[];
   expenseTiers: ExpenseTier[];
@@ -65,6 +67,8 @@ const INITIAL: LioState = {
   account: '',
   paymentBalance: 0n,
   paymentAllowance: 0n,
+  lastRoiAccrualTimestamp: 0n,
+  selectedMonthlyRoiBps: 0n,
   investors: [],
   weeklyTiers: [],
   expenseTiers: [],
@@ -204,6 +208,12 @@ export function useLio() {
       const selected = everyProfile.find((entry) => entry.address === account);
       const profile = selected?.profile;
       const tier = selected?.tier;
+      const [lastRoiAccrualTimestamp, selectedMonthlyRoiBps] = account
+        ? await Promise.all([
+          contract.lastRoiAccrualTimestamp(account) as Promise<bigint>,
+          contract.getSelectedMonthlyRoi(account) as Promise<bigint>,
+        ])
+        : [0n, 0n];
       let paymentBalance = 0n;
       let paymentAllowance = 0n;
       if (account && paymentAsset !== '0x0000000000000000000000000000000000000000') {
@@ -241,6 +251,8 @@ export function useLio() {
         },
         profile,
         tier,
+        lastRoiAccrualTimestamp,
+        selectedMonthlyRoiBps,
         investors,
         weeklyTiers,
         expenseTiers,

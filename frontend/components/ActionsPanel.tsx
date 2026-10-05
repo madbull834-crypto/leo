@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { formatUnits, isAddress, parseUnits } from 'ethers';
 import { PAYMENT_ASSET_DECIMALS, PAYMENT_ASSET_SYMBOL } from '../lib/contract';
-import { formatUnitsRaw } from '../lib/format';
+import { formatUnitsPrecise, formatUnitsRaw } from '../lib/format';
 import type { UserProfile } from '../types/lio';
 
 function shortAddress(value: string): string {
@@ -38,6 +38,8 @@ export function ActionsPanel({
   minimumInvestment,
   paymentBalance,
   paymentAllowance,
+  roiGenerated,
+  roiAvailable,
   onRequestTokens,
   onApprove,
   onActivate,
@@ -53,6 +55,8 @@ export function ActionsPanel({
   minimumInvestment: bigint;
   paymentBalance: bigint;
   paymentAllowance: bigint;
+  roiGenerated: bigint;
+  roiAvailable: bigint;
   onRequestTokens: () => void;
   onApprove: (amount: string) => void;
   onActivate: (referrer: string, amount: string) => void;
@@ -165,7 +169,7 @@ export function ActionsPanel({
         </div>
         <div className="card-body">
           <div className="claim-list">
-            <div><strong>ROI earnings</strong><span>Your ROI grows every second. Claim it whenever you want.</span>
+            <div><strong>ROI generated: {formatUnitsPrecise(roiGenerated)}</strong><span>{formatUnitsPrecise(roiAvailable)} available to claim · updates every second</span>
               <button type="button" className="btn" disabled={busy || !isActive} onClick={onClaimRoi}>Claim ROI</button></div>
             <div><strong>Weekly team reward</strong><span>Available when both sides of your team reach a reward level.</span>
               <button type="button" className="btn" disabled={busy || !isActive} onClick={onClaimWeekly}>Claim weekly reward</button></div>

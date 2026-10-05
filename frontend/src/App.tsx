@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLio } from '../hooks/useLio';
 import { useTheme } from '../hooks/useTheme';
+import { useGeneratedRoi } from '../hooks/useGeneratedRoi';
 import { Tabs, type TabDef } from '../components/ui/Tabs';
 import { LioxMark } from '../components/ui/LioxMark';
 import { OverviewTab } from '../components/OverviewTab';
@@ -38,6 +39,7 @@ export default function App() {
     requestTestUsdt, approveInvestment, activate, claimRoi, claimWeekly, withdrawPrincipal,
   } = useLio();
   const { theme, toggle } = useTheme();
+  const roi = useGeneratedRoi(state);
   const [tab, setTab] = useState(initialTab);
 
   const changeTab = (id: string) => {
@@ -161,7 +163,7 @@ export default function App() {
         {state.status === 'ready' && (
           /* Refetch keeps the frame: hold the render, no layout jump. */
           <div className={busy ? 'is-refreshing' : undefined}>
-            {tab === 'overview' && <OverviewTab state={state} />}
+            {tab === 'overview' && <OverviewTab state={state} roiGenerated={roi.generated} roiAvailable={roi.available} />}
             {tab === 'tiers' && <TiersTab state={state} />}
             {tab === 'protocol' && <ProtocolTab state={state} />}
             {tab === 'actions' && state.config && (
@@ -173,6 +175,8 @@ export default function App() {
                 minimumInvestment={state.config.minimumInvestment}
                 paymentBalance={state.paymentBalance}
                 paymentAllowance={state.paymentAllowance}
+                roiGenerated={roi.generated}
+                roiAvailable={roi.available}
                 onRequestTokens={requestTestUsdt}
                 onApprove={approveInvestment}
                 onActivate={activate}

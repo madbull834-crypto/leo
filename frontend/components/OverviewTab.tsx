@@ -6,7 +6,7 @@ import { RewardsStackChart, type StackRow } from './charts/RewardsStackChart';
 import { RoiProjectionChart } from './charts/RoiProjectionChart';
 import { ReferralCard } from './ReferralCard';
 import { compact, ratio, toNumber } from '../lib/viz';
-import { formatUnitsRaw } from '../lib/format';
+import { formatUnitsPrecise, formatUnitsRaw } from '../lib/format';
 import { PAYMENT_ASSET_DECIMALS, PAYMENT_ASSET_SYMBOL } from '../lib/contract';
 import type { Investor, LioState } from '../hooks/useLio';
 
@@ -16,14 +16,18 @@ function shortAddress(value: string): string {
   return `${value.slice(0, 6)}...${value.slice(-4)}`;
 }
 
-export function OverviewTab({ state }: { state: LioState }) {
+export function OverviewTab({ state, roiGenerated, roiAvailable }: {
+  state: LioState;
+  roiGenerated: bigint;
+  roiAvailable: bigint;
+}) {
   const { config, profile, tier, investors } = state;
   if (!config) return null;
 
   const scale = 10 ** PAYMENT_ASSET_DECIMALS;
   const asset = (value: bigint | undefined) => toNumber(value) / scale;
   const principal = asset(profile?.principal);
-  const roiAccrued = asset(profile?.roiAccrued);
+  const roiGeneratedAmount = asset(roiGenerated);
   const directRewards = asset(profile?.directRewards);
   const teamRewards = asset(profile?.teamRewards);
   const left = asset(profile?.leftBusiness);
@@ -49,7 +53,7 @@ export function OverviewTab({ state }: { state: LioState }) {
     label: shortAddress(investor.address),
     direct: asset(investor.profile.directRewards),
     team: asset(investor.profile.teamRewards),
-    roi: asset(investor.profile.roiAccrued),
+    roi: investor.address === state.account ? roiGeneratedAmount : asset(investor.profile.roiAccrued),
     isCurrent: investor.address === state.account,
   }));
 
@@ -103,8 +107,8 @@ export function OverviewTab({ state }: { state: LioState }) {
       <div className="grid-cards">
         <StatTile label="Your investment" value={`${compact(principal)} ${PAYMENT_ASSET_SYMBOL}`}
           foot={<span>{profile?.active ? `Unlocks after ${lockDays} days` : 'No active investment'}</span>} />
-        <StatTile label="ROI earned" value={`${compact(roiAccrued)} ${PAYMENT_ASSET_SYMBOL}`}
-          foot={<span>{formatUnitsRaw(profile?.roiClaimed)} claimed</span>} />
+        <StatTile label="ROI generated" value={formatUnitsPrecise(roiGenerated)}
+          foot={<span>{formatUnitsPrecise(roiAvailable)} available to claim</span>} />
         <StatTile label="Referral rewards" value={`${compact(directRewards)} ${PAYMENT_ASSET_SYMBOL}`}
           foot={<span>{Number(config.directReferralBps) / 100}% of referred volume</span>} />
         <StatTile label="Team rewards" value={`${compact(teamRewards)} ${PAYMENT_ASSET_SYMBOL}`}
@@ -166,14 +170,14 @@ export function OverviewTab({ state }: { state: LioState }) {
           title="How your ROI grows"
           subtitle={
             principal > 0
-              ? `ROI accrues every second at ${Number(config.roiMinBps) / 100}% per 30-day month`
+              ? `ROI accrues every second at ${Number(state.selectedMonthlyRoiBps) / 100}% per 30-day month`
               : `Example based on the ${formatUnitsRaw(config.minimumInvestment)} minimum investment`
           }
           className="span-7"
         >
           <RoiProjectionChart
             principal={principal || asset(config.minimumInvestment)}
-            monthlyBps={Number(config.roiMinBps)}
+            monthlyBps={Number(state.selectedMonthlyRoiBps || config.roiMinBps)}
             lockDays={lockDays}
             elapsedDays={elapsedDays}
           />
@@ -200,9 +204,9 @@ export function OverviewTab({ state }: { state: LioState }) {
             <Meter
               name="ROI claimed"
               value={asset(profile?.roiClaimed)}
-              limit={Math.max(roiAccrued, 1)}
-              display={`${Math.round(ratio(asset(profile?.roiClaimed), Math.max(roiAccrued, 1)) * 100)}%`}
-              foot={`${formatUnitsRaw(profile?.roiAccrued)} accrued, ${formatUnitsRaw(profile?.roiClaimed)} claimed`}
+              limit={Math.max(roiGeneratedAmount, 1)}
+              display={`${Math.round(ratio(asset(profile?.roiClaimed), Math.max(roiGeneratedAmount, 1)) * 100)}%`}
+              foot={`${formatUnitsPrecise(roiGenerated)} generated, ${formatUnitsRaw(profile?.roiClaimed)} claimed`}
             />
             <Meter
               name="Amount owed vs contract balance"

@@ -9,6 +9,14 @@ export function formatUnitsRaw(value: bigint | undefined): string {
   return `${readable}${trimmedFraction ? `.${trimmedFraction}` : ''} ${PAYMENT_ASSET_SYMBOL}`;
 }
 
+export function formatUnitsPrecise(value: bigint | undefined, digits = 6): string {
+  if (value === undefined) return '-';
+  const [whole, fraction = ''] = formatUnits(value, PAYMENT_ASSET_DECIMALS).split('.');
+  const readable = Number(whole).toLocaleString('en-US');
+  const visibleFraction = fraction.padEnd(digits, '0').slice(0, digits);
+  return `${readable}.${visibleFraction} ${PAYMENT_ASSET_SYMBOL}`;
+}
+
 export function formatBps(value: bigint | undefined): string {
   if (value === undefined) return '-';
   return `${Number(value) / 100}%`;
