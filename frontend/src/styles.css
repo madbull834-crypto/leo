@@ -79,9 +79,18 @@
 
 * { box-sizing: border-box; }
 
-html, body, #root { margin: 0; min-height: 100vh; }
+html, body, #root { margin: 0; min-height: 100%; }
+
+html {
+  min-height: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
 
 body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 78% -5%, rgba(22, 220, 197, 0.17), transparent 31rem),
     radial-gradient(circle at -8% 42%, rgba(244, 193, 65, 0.08), transparent 28rem),
@@ -94,7 +103,7 @@ body {
    App shell
    ========================================================================== */
 
-.app { min-height: 100vh; display: flex; flex-direction: column; position: relative; isolation: isolate; }
+.app { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; position: relative; isolation: isolate; }
 .app::before {
   content: '';
   position: fixed;
@@ -401,6 +410,7 @@ select.mono, input.mono { font-family: ui-monospace, SFMono-Regular, Menlo, mono
 .input-affix input { border: 0; outline: 0; border-radius: 0; background: transparent; }
 .input-affix > span { padding: 0 11px; color: var(--gold); font-size: .72rem; font-weight: 800; }
 .form-error { margin: 8px 0 0 !important; color: var(--status-critical) !important; }
+.form-hint { margin: 8px 0 0 !important; color: var(--status-good-text) !important; }
 .claim-list { display: grid; gap: 10px; }
 .claim-list > div { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--surface-sunken) 62%, transparent); }
 .claim-list strong { font-size: .84rem; }
@@ -409,6 +419,12 @@ select.mono, input.mono { font-family: ui-monospace, SFMono-Regular, Menlo, mono
 .help-box { display: grid; gap: 4px; margin-top: 14px; padding: 14px; border-radius: var(--radius-sm); background: var(--accent-wash); border-left: 3px solid var(--teal); }
 .help-box strong { font-size: .8rem; }
 .help-box span { color: var(--text-secondary); font-size: .76rem; }
+
+.referral-card { overflow: hidden; }
+.referral-value { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.referral-value input { width: 100%; }
+.referral-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-top: 10px; }
+.copy-message { color: var(--status-good-text); font-size: .76rem; }
 
 /* Segmented chart/table toggle */
 .seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; flex-shrink: 0; background: var(--surface-sunken); }
@@ -566,7 +582,23 @@ table.data tbody tr:hover { background: rgba(22, 220, 197, .045); }
 }
 
 @media (max-width: 680px) {
-  .topbar-inner, .content { padding: 0 16px; }
+  .topbar-inner, .content {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+  .topbar-main { gap: 12px; padding-top: 12px; padding-bottom: 8px; }
+  .topbar-actions { width: 100%; gap: 7px; }
+  .topbar-actions .net-chip.mono { display: none; }
+  .topbar-actions .btn-icon { margin-left: auto; }
+  .tabs {
+    margin-left: calc(-1 * max(16px, env(safe-area-inset-left)));
+    margin-right: calc(-1 * max(16px, env(safe-area-inset-right)));
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
+    scroll-padding-inline: 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab { min-height: 44px; padding: 10px 12px; }
   .content { padding-top: 20px; padding-bottom: 48px; }
   .grid-cards > * { grid-column: span 12 !important; }
   .card { padding: 16px; }
@@ -577,8 +609,29 @@ table.data tbody tr:hover { background: rgba(22, 220, 197, .045); }
   .intro-emblem { display: none; }
   .field-row > label { min-width: 100%; }
   .field-row > select, .field-row > input { min-width: 0; width: 100%; }
-  .wallet-callout { align-items: stretch; flex-direction: column; }
+  .wallet-callout { align-items: stretch; flex-direction: column; padding: 16px; }
+  .wallet-callout .btn { min-height: 46px; width: 100%; }
+  .filter-bar { align-items: stretch; }
+  .filter-bar .filter-label { width: 100%; }
+  .filter-bar select, .filter-bar .btn { min-height: 44px; max-width: none; width: 100%; }
+  .card-head { flex-wrap: wrap; }
+  .card-head .seg { margin-left: auto; }
+  .btn-row .btn, .step-actions .btn { min-height: 44px; }
   .field-grid { grid-template-columns: 1fr; }
   .claim-list > div { grid-template-columns: 1fr; }
   .claim-list .btn { grid-column: 1; grid-row: auto; margin-top: 6px; }
+  .referral-value { grid-template-columns: 1fr; }
+  .referral-value .btn { min-height: 44px; }
+  .chart-wrap { max-width: 100%; overflow: hidden; }
+  .tooltip { max-width: calc(100vw - 48px); }
+}
+
+@media (max-width: 380px) {
+  .brand-text span { display: none; }
+  .dashboard-intro { padding: 21px 17px; }
+  .dashboard-intro h1 { font-size: 2rem; }
+  .card { padding: 14px; }
+  .action-step { grid-template-columns: 30px minmax(0, 1fr); gap: 10px; }
+  .step-number { width: 30px; height: 30px; }
+  .action-step:not(:last-child)::before { top: 30px; left: 14px; }
 }

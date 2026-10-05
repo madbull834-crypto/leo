@@ -10,6 +10,7 @@
     "deploy:bsc-testnet": "hardhat run scripts/deploy-bsc-testnet.ts --network bscTestnet",
     "preflight:bsc-mainnet": "hardhat compile && hardhat run scripts/preflight-bsc-mainnet.ts --network bscMainnet",
     "deploy:bsc-mainnet": "hardhat run scripts/deploy-bsc-mainnet.ts --network bscMainnet",
+    "upgrade:bsc-mainnet": "hardhat run scripts/upgrade-bsc-mainnet.ts --network bscMainnet",
     "check:bsc-mainnet": "hardhat run scripts/check-bsc-mainnet.ts --network bscMainnet",
     "seed:local": "hardhat run scripts/seed.ts --network localhost",
     "test": "hardhat test",

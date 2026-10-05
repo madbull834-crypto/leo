@@ -11,7 +11,7 @@ Do not deploy until all of these are complete:
 - An independent smart-contract audit has approved the exact commit and compiler settings.
 - Legal/compliance review has approved the investment, referral, and ROI model in every served jurisdiction.
 - A production ERC-20 has been selected and tested. Fee-on-transfer, rebasing, and callback tokens are not supported.
-- The treasury has a documented solvency policy. New investments create principal liabilities, while ROI and rewards create additional liabilities.
+- The treasury has a documented funding policy. Every investment transfers 50% to the business treasury while the full deposit remains a principal liability and ROI basis. The deployer must add protocol funds before any ROI, reward, or principal payout that exceeds the contract's current balance.
 - The default admin and ProxyAdmin owner are multisigs with tested signer recovery.
 - Operator, reward-manager, pauser, and treasury-role holders follow least privilege.
 - Monitoring, incident response, pause procedures, and upgrade procedures have been rehearsed on testnet.
@@ -21,8 +21,9 @@ Do not deploy until all of these are complete:
 
 Copy `contracts/.env.example` to `contracts/.env` and replace every mainnet
 placeholder. `MAINNET_TREASURY_ADDRESS` is the business treasury recorded by the
-contract; assets deposited into the protocol remain held by the proxy. The role
-addresses and `MAINNET_PROXY_ADMIN_OWNER` should normally be multisigs.
+contract and receives 50% of every activation deposit. The other 50% remains in
+the proxy, while the full deposit remains a protocol liability and ROI basis.
+The role addresses and `MAINNET_PROXY_ADMIN_OWNER` should normally be multisigs.
 
 The public RPC is written into frontend metadata. Do not place an authenticated
 or rate-limited secret RPC URL in `BSC_MAINNET_PUBLIC_RPC_URL`.

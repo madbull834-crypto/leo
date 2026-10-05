@@ -111,6 +111,30 @@ export function hasInjectedWallet(): boolean {
   return typeof window !== 'undefined' && Boolean((window as any).ethereum);
 }
 
+/** True when the dApp is opened in a regular mobile browser rather than a wallet browser. */
+export function isMobileBrowser(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+/**
+ * Opens this exact route in MetaMask's mobile dApp browser. Mobile Safari and
+ * Chrome cannot inject an EIP-1193 provider themselves, so a wallet handoff is
+ * required before accounts or transactions can be requested.
+ */
+export function openInMobileWallet(): void {
+  if (typeof window === 'undefined') return;
+
+  const dappLocation = [
+    window.location.host,
+    window.location.pathname,
+    window.location.search,
+    window.location.hash,
+  ].join('');
+
+  window.location.assign(`https://metamask.app.link/dapp/${dappLocation}`);
+}
+
 /** Surfaces the Solidity revert reason instead of an opaque ethers error. */
 export function decodeError(error: unknown): string {
   const err = error as any;

@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { ethers, network, upgrades } from "hardhat";
+import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 
 describe("TheLio business plan", function () {
   async function deploy() {
@@ -25,10 +26,17 @@ describe("TheLio business plan", function () {
       lio.connect(alice).activateInvestor(admin.address, 1_000, { value: 999 }),
     ).to.be.revertedWith("LioCore: incorrect native value");
 
-    await lio.connect(alice).activateInvestor(admin.address, 1_000, { value: 1_000 });
+    const treasuryBefore = await ethers.provider.getBalance(admin.address);
+    const protocolBefore = await ethers.provider.getBalance(lio.address);
+    await expect(lio.connect(alice).activateInvestor(admin.address, 1_000, { value: 1_000 }))
+      .to.emit(lio, "InvestmentAllocatedToTreasury")
+      .withArgs(alice.address, admin.address, ethers.constants.AddressZero, 1_000, 500, anyValue);
     await lio.connect(bob).activateInvestor(admin.address, 500_000, { value: 500_000 });
     expect((await lio.getUserProfile(alice.address)).principal).to.equal(1_000);
     expect((await lio.getUserProfile(bob.address)).principal).to.equal(500_000);
+    // The root treasury receives its 50% allocation plus its 5% referral reward.
+    expect((await ethers.provider.getBalance(admin.address)).sub(treasuryBefore)).to.equal(275_550);
+    expect((await ethers.provider.getBalance(lio.address)).sub(protocolBefore)).to.equal(225_450);
   });
 
   it("pays exactly one 5% direct reward and tracks direct business", async function () {
@@ -39,9 +47,65 @@ describe("TheLio business plan", function () {
     const referrer = await lio.getUserProfile(admin.address);
     expect(referrer.directRewards).to.equal(50);
     expect(referrer.claimableBalance).to.equal(0);
-    expect(await ethers.provider.getBalance(admin.address)).to.equal(before.add(50));
+    expect(await ethers.provider.getBalance(admin.address)).to.equal(before.add(550));
     expect(await lio.directBusiness(admin.address)).to.equal(1_000);
     expect(await lio.directRewardIssued(alice.address)).to.equal(true);
+  });
+
+  it("uses treasury as the root and only permits active non-root referrers", async function () {
+    const { lio, admin, alice, bob, carol } = await deploy();
+
+    expect(await lio.isReferralEligible(admin.address)).to.equal(true);
+    expect(await lio.isReferralEligible(carol.address)).to.equal(false);
+    await expect(
+      lio.connect(alice).activateInvestor(carol.address, 1_000, { value: 1_000 }),
+    ).to.be.revertedWith("LioReferral: referrer must be active");
+
+    // A missing referrer resolves to the treasury root.
+    await lio.connect(alice).activateInvestor(ethers.constants.AddressZero, 1_000, { value: 1_000 });
+    expect(await lio.referrerOf(alice.address)).to.equal(admin.address);
+    expect(await lio.isReferralEligible(alice.address)).to.equal(true);
+
+    await lio.connect(bob).activateInvestor(alice.address, 1_000, { value: 1_000 });
+    expect(await lio.referrerOf(bob.address)).to.equal(alice.address);
+  });
+
+  it("accepts deposits without prefunding and lets the deployer fund payouts when required", async function () {
+    const [admin, alice] = await ethers.getSigners();
+    const factory = await ethers.getContractFactory("TheLio");
+    const lio = await upgrades.deployProxy(
+      factory,
+      [admin.address, ethers.constants.AddressZero, 100],
+      { kind: "transparent", initializer: "initialize" },
+    );
+    await lio.deployed();
+
+    // 50% goes to treasury and the root also receives the 5% referral reward.
+    await lio.connect(alice).activateInvestor(admin.address, 1_000, { value: 1_000 });
+    expect(await ethers.provider.getBalance(lio.address)).to.equal(450);
+    expect(await lio.treasuryBalance()).to.equal(450);
+    expect(await lio.totalLiabilities()).to.equal(1_000);
+
+    // ROI is still based on the full 1,000 deposit. At the default 8%, the
+    // gross ROI is 80 and the user receives 76 after the 5% claim deduction.
+    await network.provider.send("evm_increaseTime", [30 * 86_400]);
+    await network.provider.send("evm_mine");
+    await lio.connect(alice).claimForUser(alice.address);
+    expect((await lio.getUserProfile(alice.address)).roiClaimed).to.equal(80);
+    expect(await lio.treasuryBalance()).to.equal(374);
+
+    await network.provider.send("evm_increaseTime", [153 * 86_400]);
+    await network.provider.send("evm_mine");
+    await expect(lio.connect(alice).withdrawPrincipal()).to.be.revertedWith(
+      "LioCore: insufficient treasury",
+    );
+
+    // Anyone may add funds, so the deployer can top up exactly when required.
+    await lio.fundTreasury(626, { value: 626 });
+    await lio.connect(alice).withdrawPrincipal();
+    expect(await ethers.provider.getBalance(lio.address)).to.equal(0);
+    expect(await lio.treasuryBalance()).to.equal(0);
+    expect(await lio.totalLiabilities()).to.equal(0);
   });
 
   it("supports an assigned monthly ROI from 8% through 32% and deducts 5%", async function () {
@@ -66,6 +130,30 @@ describe("TheLio business plan", function () {
     await expect(lio.connect(alice).claimMonthlyInvestment(alice.address, 1)).to.be.revertedWith(
       "LioROI: nothing to claim",
     );
+  });
+
+  it("prorates ROI per second and allows consecutive claims", async function () {
+    const { lio, admin, alice } = await deploy();
+    await lio.connect(alice).activateInvestor(admin.address, 100_000_000, { value: 100_000_000 });
+    const activated = await lio.getUserProfile(alice.address);
+
+    await network.provider.send("evm_setNextBlockTimestamp", [activated.activationTimestamp.toNumber() + 1]);
+    await lio.connect(alice).claimForUser(alice.address);
+    expect((await lio.getUserProfile(alice.address)).roiClaimed).to.equal(3);
+
+    await network.provider.send("evm_setNextBlockTimestamp", [activated.activationTimestamp.toNumber() + 2]);
+    await lio.connect(alice).claimForUser(alice.address);
+    expect((await lio.getUserProfile(alice.address)).roiClaimed).to.equal(6);
+
+    // Frequent claims preserve fractional accrual and still collect exactly
+    // the cumulative 5% deduction over a complete 30-day month.
+    await network.provider.send("evm_setNextBlockTimestamp", [
+      activated.activationTimestamp.toNumber() + (30 * 86_400),
+    ]);
+    await lio.connect(alice).claimForUser(alice.address);
+    const profile = await lio.getUserProfile(alice.address);
+    expect(profile.roiClaimed).to.equal(8_000_000);
+    expect(profile.totalClaimed).to.equal(7_600_000);
   });
 
   it("requires matched left and right business and pays once per week", async function () {
@@ -182,7 +270,8 @@ describe("TheLio business plan", function () {
     await lio.connect(alice).activateInvestor(admin.address, 100_000_000);
 
     expect((await lio.weeklyTiers(0)).threshold).to.equal(5_000_000_000);
-    expect(await token.balanceOf(admin.address)).to.equal(adminBefore.add(5_000_000));
+    expect(await token.balanceOf(admin.address)).to.equal(adminBefore.add(55_000_000));
+    expect(await token.balanceOf(lio.address)).to.equal(145_000_000);
     expect((await lio.getUserProfile(alice.address)).principal).to.equal(100_000_000);
   });
 

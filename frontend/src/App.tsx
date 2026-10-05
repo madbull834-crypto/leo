@@ -7,13 +7,19 @@ import { OverviewTab } from '../components/OverviewTab';
 import { TiersTab } from '../components/TiersTab';
 import { ProtocolTab } from '../components/ProtocolTab';
 import { ActionsPanel } from '../components/ActionsPanel';
-import { CONTRACT_ADDRESS, IS_TESTNET, NETWORK_LABEL } from '../lib/contract';
+import {
+  CONTRACT_ADDRESS,
+  IS_TESTNET,
+  NETWORK_LABEL,
+  hasInjectedWallet,
+  isMobileBrowser,
+} from '../lib/contract';
 
 const TABS: TabDef[] = [
   { id: 'overview', label: 'Dashboard' },
   { id: 'tiers', label: 'Rewards' },
   { id: 'protocol', label: 'Contract details' },
-  { id: 'actions', label: 'Get started' },
+  { id: 'actions', label: 'Invest & claim' },
 ];
 
 function shortAddress(value: string): string {
@@ -41,6 +47,7 @@ export default function App() {
 
   const isDown = state.status === 'error';
   const isLoading = state.status === 'loading';
+  const needsMobileWallet = isMobileBrowser() && !hasInjectedWallet();
 
   return (
     <div className="app">
@@ -82,8 +89,8 @@ export default function App() {
         <section className="dashboard-intro" aria-labelledby="dashboard-title">
           <div>
             <span className="eyebrow">THE LIOX · {NETWORK_LABEL.toUpperCase()}</span>
-            <h1 id="dashboard-title">Your growth, clearly tracked</h1>
-            <p>Follow your investment, monthly returns, referral rewards and team progress from one secure dashboard.</p>
+            <h1 id="dashboard-title">Everything in one place</h1>
+            <p>Check your investment, ROI, referral earnings and team rewards whenever you need to.</p>
           </div>
           <div className="intro-emblem" aria-hidden="true">
             <span>THE</span>
@@ -108,13 +115,17 @@ export default function App() {
         {state.status === 'ready' && state.accounts.length === 0 && (
           <div className="wallet-callout">
             <div>
-              <strong>Connect your wallet to get started</strong>
-              <span>{IS_TESTNET
-                ? 'Use BSC Testnet only. Test tokens have no real-world value.'
-                : 'Use BSC Mainnet only. Transactions use assets with real-world value.'}</span>
+              <strong>{needsMobileWallet
+                ? 'Open this page in your mobile wallet'
+                : 'Connect your wallet'}</strong>
+              <span>{needsMobileWallet
+                ? `Your mobile browser cannot sign transactions. Continue in MetaMask on ${NETWORK_LABEL}.`
+                : IS_TESTNET
+                  ? 'This is the test network. Test tokens do not have real-world value.'
+                  : 'Make sure your wallet is connected to BSC Mainnet before continuing.'}</span>
             </div>
             <button type="button" className="btn btn-primary" onClick={connectWallet} disabled={busy}>
-              Connect wallet
+              {needsMobileWallet ? 'Open in MetaMask' : 'Connect wallet'}
             </button>
           </div>
         )}

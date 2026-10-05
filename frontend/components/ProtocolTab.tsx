@@ -27,7 +27,7 @@ export function ProtocolTab({ state }: { state: LioState }) {
           <div className="card-head">
             <div>
               <h2 className="card-title">Plan settings</h2>
-              <p className="card-sub">Verified live values from the smart contract</p>
+              <p className="card-sub">Current values read directly from the contract</p>
             </div>
             {config.paused ? (
               <span className="pill pill-warn"><span className="pill-icon">⏸</span>Paused</span>
@@ -54,20 +54,20 @@ export function ProtocolTab({ state }: { state: LioState }) {
           <div className="card-head">
             <div>
               <h2 className="card-title">Reward reserve</h2>
-              <p className="card-sub">Funds available to cover member payouts</p>
+              <p className="card-sub">Funds held by the contract for member payments</p>
             </div>
           </div>
           <div className="card-body">
             <div className="hero">
-              <span className="hero-value">{compact(asset(config.availableLiquidity))}</span>
-              <span className="hero-unit">{PAYMENT_ASSET_SYMBOL} available</span>
+              <span className="hero-value">{compact(asset(config.treasuryBalance))}</span>
+              <span className="hero-unit">{PAYMENT_ASSET_SYMBOL} held by contract</span>
             </div>
             <Meter
               name="Committed rewards vs reserve"
               value={asset(config.totalLiabilities)}
               limit={Math.max(asset(config.treasuryBalance), 1)}
               display={`${compact(asset(config.totalLiabilities))} / ${compact(asset(config.treasuryBalance))}`}
-              foot="The contract blocks payouts that are not fully funded"
+              foot="More funds can be added when member payments are due"
             />
           </div>
         </section>
@@ -78,7 +78,7 @@ export function ProtocolTab({ state }: { state: LioState }) {
           <div className="card-head">
             <div>
               <h2 className="card-title">Deployment</h2>
-              <p className="card-sub">Network and contract information</p>
+              <p className="card-sub">Where this contract is running</p>
             </div>
           </div>
           <div className="card-body">
@@ -95,7 +95,7 @@ export function ProtocolTab({ state }: { state: LioState }) {
           <div className="card-head">
             <div>
               <h2 className="card-title">Account details</h2>
-              <p className="card-sub">Your complete on-chain position record</p>
+              <p className="card-sub">The account information stored in the contract</p>
             </div>
           </div>
           <div className="card-body table-scroll">

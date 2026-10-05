@@ -26,10 +26,13 @@ BSC mainnet uses a separate guarded deployment path with no test token or seed
 step. See [`docs/mainnet-deployment.md`](docs/mainnet-deployment.md) for release
 gates, environment variables, role handoff, verification, and launch checks.
 
-The contract keeps principal and earned rewards as liabilities. Fund the treasury
-with enough surplus before activation so the one-time 5% referral commission can
-be paid immediately without using locked principal. ROI, weekly rewards, expense
-benefits, and principal withdrawals also require fully backed liabilities.
+Each activation sends 50% of the deposit immediately to the configured business
+treasury. The full deposit remains the investor's principal and ROI basis. The
+contract retains the other 50%, pays the one-time 5% referral commission, and
+allows the deployer to add funds through `fundTreasury` whenever an ROI, reward,
+or principal payment requires more cash. Each payout succeeds only when the
+contract currently holds enough for that payment. The treasury is the referral
+root; all other referrers must hold an active investment.
 
 The PDF does not define binary-tree placement or a fresh-business time window, so
 an account with `OPERATOR_ROLE` supplies verified left, right, and fresh volumes.
@@ -76,7 +79,8 @@ the "Acting as" dropdown), so no browser wallet is required.
 
 `seed:local` builds a realistic cohort: four investors on different tiers,
 unbalanced binary legs, a funded treasury, and real accrued ROI (it advances
-chain time by 95 days, since `accrueROI` only credits whole 30-day periods).
+chain time by 95 days; ROI accrues continuously, prorated per second from its
+configured 30-day monthly rate).
 
 ## Dashboard
 

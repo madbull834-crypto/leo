@@ -39,9 +39,12 @@ contract TheLio is LioClaim {
     }
 
     function activateInvestor(address referrer, uint256 amount) external payable whenNotPaused nonReentrant {
-        activateInvestment(referrer, amount);
-        assignReferral(msg.sender, referrer);
-        issueDirectReferralReward(msg.sender, referrer, amount);
+        // A missing referrer starts at the treasury root. Every other referrer
+        // is checked by assignReferral and must hold an active investment.
+        address effectiveReferrer = referrer == address(0) ? treasury : referrer;
+        activateInvestment(effectiveReferrer, amount);
+        assignReferral(msg.sender, effectiveReferrer);
+        issueDirectReferralReward(msg.sender, effectiveReferrer, amount);
     }
 
     function updateUserBusiness(address user, uint256 leftVolume, uint256 rightVolume, uint256 freshVolume) external onlyRole(OPERATOR_ROLE) {

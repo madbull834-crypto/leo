@@ -13,8 +13,10 @@ import {
   getReadProvider,
   getWriteContract,
   hasInjectedWallet,
+  isMobileBrowser,
   listBrowserAccounts,
   listLocalAccounts,
+  openInMobileWallet,
 } from '../lib/contract';
 import type {
   ExpenseTier,
@@ -279,6 +281,12 @@ export function useLio() {
   );
 
   const connectWallet = useCallback(async () => {
+    if (!hasInjectedWallet() && isMobileBrowser()) {
+      setTxMessage('Opening THE LIOX in MetaMask...');
+      openInMobileWallet();
+      return;
+    }
+
     setBusy(true);
     setTxMessage('Connecting wallet...');
     try {

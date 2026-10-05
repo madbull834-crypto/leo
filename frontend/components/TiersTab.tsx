@@ -47,8 +47,8 @@ export function TiersTab({ state }: { state: LioState }) {
     <>
       <div className="grid-cards">
         <ChartCard
-          title="Weekly team tier ladder"
-          subtitle="Your left and right teams must contribute equally to unlock each level"
+          title="Weekly team rewards"
+          subtitle="Grow both sides of your team to reach the next reward level"
           className="span-12"
           table={ladderTable}
         >
@@ -60,8 +60,8 @@ export function TiersTab({ state }: { state: LioState }) {
         <section className="card span-6">
           <div className="card-head">
             <div>
-              <h2 className="card-title">Business milestone benefits</h2>
-              <p className="card-sub">Based on {fresh.toLocaleString('en-US')} {PAYMENT_ASSET_SYMBOL} in new business</p>
+              <h2 className="card-title">Business rewards</h2>
+              <p className="card-sub">Your new business volume: {fresh.toLocaleString('en-US')} {PAYMENT_ASSET_SYMBOL}</p>
             </div>
           </div>
           <div className="card-body table-scroll">
@@ -87,7 +87,7 @@ export function TiersTab({ state }: { state: LioState }) {
           <div className="card-head">
             <div>
               <h2 className="card-title">Tour rewards</h2>
-              <p className="card-sub">Destinations configured on deployment</p>
+              <p className="card-sub">Trips you can unlock through your personal referral business</p>
             </div>
           </div>
           <div className="card-body table-scroll">

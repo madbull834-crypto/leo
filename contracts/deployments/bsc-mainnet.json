@@ -3,7 +3,7 @@
   "chainId": 56,
   "network": "bscMainnet",
   "address": "0x3C97360716E3Df6976Dd1cF93d537579041253C6",
-  "implementation": "0x6ef0b48D3E3BB045f7a3f29Cb03768D14BF28cC5",
+  "implementation": "0x2399829CB030A06318357008A3837ebc0764F93c",
   "unusedImplementation": "0xff6adCDC693287933EF8580b5a63E70F072b5110",
   "proxyAdmin": "0x2b898FFFDfdB40FC599e02827519B8921444c4B9",
   "proxyAdminOwner": "0xeEDb3e5BF8551ab734347fDC8aF9286eEE26773C",
@@ -23,5 +23,11 @@
   "explorerUrl": "https://bscscan.com",
   "deployer": "0xeEDb3e5BF8551ab734347fDC8aF9286eEE26773C",
   "deploymentTransaction": "0x9570f5c30b756735905a790a3709f5371eac0abfd4e5570cbe5fbadb9aa6b8b9",
-  "deployedAt": "2026-09-27T18:04:30.582Z"
+  "deployedAt": "2026-09-27T18:04:30.582Z",
+  "previousImplementations": [
+    "0x6ef0b48D3E3BB045f7a3f29Cb03768D14BF28cC5",
+    "0x68f3b6C98e58B443Ee7683829A9573D00bb93ca1"
+  ],
+  "upgradeTransaction": "0xde3f5f85f032453fc980aeba24f5d12c3d3246a95cb518b324729779e40af8fe",
+  "upgradedAt": "2026-10-05T15:43:00.338Z"
 }

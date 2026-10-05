@@ -651,6 +651,1286 @@
         },
         "namespaces": {}
       }
+    },
+    "8590d5ba082cb251a9e0563e653092d767c7a900811bf4528732f3209edfda0c": {
+      "address": "0x68f3b6C98e58B443Ee7683829A9573D00bb93ca1",
+      "txHash": "0x3db43de1d8da10ecb4fad8eeee1ecc787b40a3b9032d3e8f05ec07860e0e785a",
+      "layout": {
+        "solcVersion": "0.8.26",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)23_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:57"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_paused",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_bool",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:29"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:116"
+          },
+          {
+            "label": "treasury",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:19"
+          },
+          {
+            "label": "paymentAsset",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_address",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:20"
+          },
+          {
+            "label": "minimumInvestment",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:21"
+          },
+          {
+            "label": "directReferralBps",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:22"
+          },
+          {
+            "label": "claimDeductionBps",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:23"
+          },
+          {
+            "label": "lockDuration",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:24"
+          },
+          {
+            "label": "roiMinBps",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:25"
+          },
+          {
+            "label": "roiMaxBps",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:26"
+          },
+          {
+            "label": "roiStrategyId",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:27"
+          },
+          {
+            "label": "currentWeekId",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:28"
+          },
+          {
+            "label": "businessUnit",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:29"
+          },
+          {
+            "label": "planConfigurationLocked",
+            "offset": 0,
+            "slot": "212",
+            "type": "t_bool",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:30"
+          },
+          {
+            "label": "totalLiabilities",
+            "offset": 0,
+            "slot": "213",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:31"
+          },
+          {
+            "label": "treasuryBalance",
+            "offset": 0,
+            "slot": "214",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:32"
+          },
+          {
+            "label": "users",
+            "offset": 0,
+            "slot": "215",
+            "type": "t_mapping(t_address,t_struct(UserProfile)4619_storage)",
+            "contract": "LioInvestment",
+            "src": "contracts/LioInvestment.sol:31"
+          },
+          {
+            "label": "lastRoiAccrualTimestamp",
+            "offset": 0,
+            "slot": "216",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioROI",
+            "src": "contracts/LioROI.sol:14"
+          },
+          {
+            "label": "roiAccrued",
+            "offset": 0,
+            "slot": "217",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioROI",
+            "src": "contracts/LioROI.sol:15"
+          },
+          {
+            "label": "roiClaimed",
+            "offset": 0,
+            "slot": "218",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioROI",
+            "src": "contracts/LioROI.sol:16"
+          },
+          {
+            "label": "lastClaimPeriod",
+            "offset": 0,
+            "slot": "219",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioROI",
+            "src": "contracts/LioROI.sol:17"
+          },
+          {
+            "label": "monthlyRoiBps",
+            "offset": 0,
+            "slot": "220",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioROI",
+            "src": "contracts/LioROI.sol:18"
+          },
+          {
+            "label": "referrerOf",
+            "offset": 0,
+            "slot": "221",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "LioReferral",
+            "src": "contracts/LioReferral.sol:8"
+          },
+          {
+            "label": "leftChildOf",
+            "offset": 0,
+            "slot": "222",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "LioReferral",
+            "src": "contracts/LioReferral.sol:9"
+          },
+          {
+            "label": "rightChildOf",
+            "offset": 0,
+            "slot": "223",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "LioReferral",
+            "src": "contracts/LioReferral.sol:10"
+          },
+          {
+            "label": "directRewardIssued",
+            "offset": 0,
+            "slot": "224",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "LioReferral",
+            "src": "contracts/LioReferral.sol:11"
+          },
+          {
+            "label": "directBusiness",
+            "offset": 0,
+            "slot": "225",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioReferral",
+            "src": "contracts/LioReferral.sol:12"
+          },
+          {
+            "label": "weeklyTiers",
+            "offset": 0,
+            "slot": "226",
+            "type": "t_mapping(t_uint256,t_struct(WeeklyTier)5550_storage)",
+            "contract": "LioTeamRewards",
+            "src": "contracts/LioTeamRewards.sol:13"
+          },
+          {
+            "label": "lastWeeklyRewardTimestamp",
+            "offset": 0,
+            "slot": "227",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioTeamRewards",
+            "src": "contracts/LioTeamRewards.sol:14"
+          },
+          {
+            "label": "totalWeeklyRewards",
+            "offset": 0,
+            "slot": "228",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioTeamRewards",
+            "src": "contracts/LioTeamRewards.sol:15"
+          },
+          {
+            "label": "weeklyClaimed",
+            "offset": 0,
+            "slot": "229",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_bool))",
+            "contract": "LioTeamRewards",
+            "src": "contracts/LioTeamRewards.sol:16"
+          },
+          {
+            "label": "expenseTiers",
+            "offset": 0,
+            "slot": "230",
+            "type": "t_mapping(t_uint256,t_struct(ExpenseTier)3261_storage)",
+            "contract": "LioBenefits",
+            "src": "contracts/LioBenefits.sol:19"
+          },
+          {
+            "label": "tourRewards",
+            "offset": 0,
+            "slot": "231",
+            "type": "t_mapping(t_uint256,t_struct(TourReward)3268_storage)",
+            "contract": "LioBenefits",
+            "src": "contracts/LioBenefits.sol:20"
+          },
+          {
+            "label": "currentExpenseTier",
+            "offset": 0,
+            "slot": "232",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioBenefits",
+            "src": "contracts/LioBenefits.sol:21"
+          },
+          {
+            "label": "claimedExpenseBenefit",
+            "offset": 0,
+            "slot": "233",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioBenefits",
+            "src": "contracts/LioBenefits.sol:22"
+          },
+          {
+            "label": "tourQualified",
+            "offset": 0,
+            "slot": "234",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_bool))",
+            "contract": "LioBenefits",
+            "src": "contracts/LioBenefits.sol:23"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "235",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "236",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:88"
+          },
+          {
+            "label": "claimPeriodUsed",
+            "offset": 0,
+            "slot": "285",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_bool))",
+            "contract": "LioClaim",
+            "src": "contracts/LioClaim.sol:8"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_enum(AccountStatus)4587": {
+            "label": "enum LioInvestment.AccountStatus",
+            "members": [
+              "Inactive",
+              "Active",
+              "Suspended"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_bool))": {
+            "label": "mapping(address => mapping(uint256 => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(UserProfile)4619_storage)": {
+            "label": "mapping(address => struct LioInvestment.UserProfile)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)23_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ExpenseTier)3261_storage)": {
+            "label": "mapping(uint256 => struct LioBenefits.ExpenseTier)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(TourReward)3268_storage)": {
+            "label": "mapping(uint256 => struct LioBenefits.TourReward)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(WeeklyTier)5550_storage)": {
+            "label": "mapping(uint256 => struct LioTeamRewards.WeeklyTier)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ExpenseTier)3261_storage": {
+            "label": "struct LioBenefits.ExpenseTier",
+            "members": [
+              {
+                "label": "threshold",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "benefit",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "enabled",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(RoleData)23_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(TourReward)3268_storage": {
+            "label": "struct LioBenefits.TourReward",
+            "members": [
+              {
+                "label": "name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "target",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "enabled",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(UserProfile)4619_storage": {
+            "label": "struct LioInvestment.UserProfile",
+            "members": [
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "referrer",
+                "type": "t_address",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "activationTimestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "unlockTimestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "principal",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "roiAccrued",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "roiClaimed",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "directRewards",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "teamRewards",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "leftBusiness",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "rightBusiness",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "9"
+              },
+              {
+                "label": "freshBusiness",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "10"
+              },
+              {
+                "label": "claimableBalance",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "11"
+              },
+              {
+                "label": "totalClaimed",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "12"
+              },
+              {
+                "label": "status",
+                "type": "t_enum(AccountStatus)4587",
+                "offset": 0,
+                "slot": "13"
+              }
+            ],
+            "numberOfBytes": "448"
+          },
+          "t_struct(WeeklyTier)5550_storage": {
+            "label": "struct LioTeamRewards.WeeklyTier",
+            "members": [
+              {
+                "label": "threshold",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "reward",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "enabled",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "71782b5b435f8ff482f8f5495ca70866acc58910d4074baef10fb2148cce9e5b": {
+      "address": "0x2399829CB030A06318357008A3837ebc0764F93c",
+      "txHash": "0x87519eaba928adcd22d2ab1157f75c03fe88f0e02ccd5830316cd7b719345017",
+      "layout": {
+        "solcVersion": "0.8.26",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)23_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:57"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_paused",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_bool",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:29"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "PausableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol:116"
+          },
+          {
+            "label": "treasury",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:19"
+          },
+          {
+            "label": "paymentAsset",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_address",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:20"
+          },
+          {
+            "label": "minimumInvestment",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:21"
+          },
+          {
+            "label": "directReferralBps",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:22"
+          },
+          {
+            "label": "claimDeductionBps",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:23"
+          },
+          {
+            "label": "lockDuration",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:24"
+          },
+          {
+            "label": "roiMinBps",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:25"
+          },
+          {
+            "label": "roiMaxBps",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:26"
+          },
+          {
+            "label": "roiStrategyId",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:27"
+          },
+          {
+            "label": "currentWeekId",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:28"
+          },
+          {
+            "label": "businessUnit",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:29"
+          },
+          {
+            "label": "planConfigurationLocked",
+            "offset": 0,
+            "slot": "212",
+            "type": "t_bool",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:30"
+          },
+          {
+            "label": "totalLiabilities",
+            "offset": 0,
+            "slot": "213",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:31"
+          },
+          {
+            "label": "treasuryBalance",
+            "offset": 0,
+            "slot": "214",
+            "type": "t_uint256",
+            "contract": "LioCore",
+            "src": "contracts/LioCore.sol:32"
+          },
+          {
+            "label": "users",
+            "offset": 0,
+            "slot": "215",
+            "type": "t_mapping(t_address,t_struct(UserProfile)4619_storage)",
+            "contract": "LioInvestment",
+            "src": "contracts/LioInvestment.sol:31"
+          },
+          {
+            "label": "lastRoiAccrualTimestamp",
+            "offset": 0,
+            "slot": "216",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioROI",
+            "src": "contracts/LioROI.sol:22"
+          },
+          {
+            "label": "roiAccrued",
+            "offset": 0,
+            "slot": "217",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioROI",
+            "src": "contracts/LioROI.sol:23"
+          },
+          {
+            "label": "roiClaimed",
+            "offset": 0,
+            "slot": "218",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioROI",
+            "src": "contracts/LioROI.sol:24"
+          },
+          {
+            "label": "lastClaimPeriod",
+            "offset": 0,
+            "slot": "219",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioROI",
+            "src": "contracts/LioROI.sol:25"
+          },
+          {
+            "label": "monthlyRoiBps",
+            "offset": 0,
+            "slot": "220",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioROI",
+            "src": "contracts/LioROI.sol:26"
+          },
+          {
+            "label": "referrerOf",
+            "offset": 0,
+            "slot": "221",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "LioReferral",
+            "src": "contracts/LioReferral.sol:8"
+          },
+          {
+            "label": "leftChildOf",
+            "offset": 0,
+            "slot": "222",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "LioReferral",
+            "src": "contracts/LioReferral.sol:9"
+          },
+          {
+            "label": "rightChildOf",
+            "offset": 0,
+            "slot": "223",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "LioReferral",
+            "src": "contracts/LioReferral.sol:10"
+          },
+          {
+            "label": "directRewardIssued",
+            "offset": 0,
+            "slot": "224",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "LioReferral",
+            "src": "contracts/LioReferral.sol:11"
+          },
+          {
+            "label": "directBusiness",
+            "offset": 0,
+            "slot": "225",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioReferral",
+            "src": "contracts/LioReferral.sol:12"
+          },
+          {
+            "label": "weeklyTiers",
+            "offset": 0,
+            "slot": "226",
+            "type": "t_mapping(t_uint256,t_struct(WeeklyTier)5622_storage)",
+            "contract": "LioTeamRewards",
+            "src": "contracts/LioTeamRewards.sol:13"
+          },
+          {
+            "label": "lastWeeklyRewardTimestamp",
+            "offset": 0,
+            "slot": "227",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioTeamRewards",
+            "src": "contracts/LioTeamRewards.sol:14"
+          },
+          {
+            "label": "totalWeeklyRewards",
+            "offset": 0,
+            "slot": "228",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioTeamRewards",
+            "src": "contracts/LioTeamRewards.sol:15"
+          },
+          {
+            "label": "weeklyClaimed",
+            "offset": 0,
+            "slot": "229",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_bool))",
+            "contract": "LioTeamRewards",
+            "src": "contracts/LioTeamRewards.sol:16"
+          },
+          {
+            "label": "expenseTiers",
+            "offset": 0,
+            "slot": "230",
+            "type": "t_mapping(t_uint256,t_struct(ExpenseTier)3261_storage)",
+            "contract": "LioBenefits",
+            "src": "contracts/LioBenefits.sol:19"
+          },
+          {
+            "label": "tourRewards",
+            "offset": 0,
+            "slot": "231",
+            "type": "t_mapping(t_uint256,t_struct(TourReward)3268_storage)",
+            "contract": "LioBenefits",
+            "src": "contracts/LioBenefits.sol:20"
+          },
+          {
+            "label": "currentExpenseTier",
+            "offset": 0,
+            "slot": "232",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioBenefits",
+            "src": "contracts/LioBenefits.sol:21"
+          },
+          {
+            "label": "claimedExpenseBenefit",
+            "offset": 0,
+            "slot": "233",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "LioBenefits",
+            "src": "contracts/LioBenefits.sol:22"
+          },
+          {
+            "label": "tourQualified",
+            "offset": 0,
+            "slot": "234",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_bool))",
+            "contract": "LioBenefits",
+            "src": "contracts/LioBenefits.sol:23"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "235",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "236",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:88"
+          },
+          {
+            "label": "claimPeriodUsed",
+            "offset": 0,
+            "slot": "285",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_bool))",
+            "contract": "LioClaim",
+            "src": "contracts/LioClaim.sol:8"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_enum(AccountStatus)4587": {
+            "label": "enum LioInvestment.AccountStatus",
+            "members": [
+              "Inactive",
+              "Active",
+              "Suspended"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_bool))": {
+            "label": "mapping(address => mapping(uint256 => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(UserProfile)4619_storage)": {
+            "label": "mapping(address => struct LioInvestment.UserProfile)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)23_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ExpenseTier)3261_storage)": {
+            "label": "mapping(uint256 => struct LioBenefits.ExpenseTier)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(TourReward)3268_storage)": {
+            "label": "mapping(uint256 => struct LioBenefits.TourReward)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(WeeklyTier)5622_storage)": {
+            "label": "mapping(uint256 => struct LioTeamRewards.WeeklyTier)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ExpenseTier)3261_storage": {
+            "label": "struct LioBenefits.ExpenseTier",
+            "members": [
+              {
+                "label": "threshold",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "benefit",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "enabled",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(RoleData)23_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(TourReward)3268_storage": {
+            "label": "struct LioBenefits.TourReward",
+            "members": [
+              {
+                "label": "name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "target",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "enabled",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(UserProfile)4619_storage": {
+            "label": "struct LioInvestment.UserProfile",
+            "members": [
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "referrer",
+                "type": "t_address",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "activationTimestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "unlockTimestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "principal",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "roiAccrued",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "roiClaimed",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "directRewards",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "teamRewards",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "leftBusiness",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "rightBusiness",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "9"
+              },
+              {
+                "label": "freshBusiness",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "10"
+              },
+              {
+                "label": "claimableBalance",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "11"
+              },
+              {
+                "label": "totalClaimed",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "12"
+              },
+              {
+                "label": "status",
+                "type": "t_enum(AccountStatus)4587",
+                "offset": 0,
+                "slot": "13"
+              }
+            ],
+            "numberOfBytes": "448"
+          },
+          "t_struct(WeeklyTier)5622_storage": {
+            "label": "struct LioTeamRewards.WeeklyTier",
+            "members": [
+              {
+                "label": "threshold",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "reward",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "enabled",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
     }
   }
 }

@@ -29,11 +29,19 @@ abstract contract LioReferral is LioROI {
         require(referrer != user, "LioReferral: self referral");
         require(referrer != address(0), "LioReferral: zero referrer");
         require(users[user].activationTimestamp != 0, "LioReferral: user not active");
+        require(
+            referrer == treasury || users[referrer].active,
+            "LioReferral: referrer must be active"
+        );
 
         if (referrerOf[user] == address(0)) {
             referrerOf[user] = referrer;
             emit ReferralAssigned(user, referrer, referrer, block.timestamp);
         }
+    }
+
+    function isReferralEligible(address account) public view returns (bool) {
+        return account == treasury || users[account].active;
     }
 
     function issueDirectReferralReward(address user, address referrer, uint256 investmentAmount) internal {

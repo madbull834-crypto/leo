@@ -14,6 +14,7 @@ abstract contract LioCore is Initializable, AccessControlUpgradeable, PausableUp
     bytes32 public constant REWARD_MANAGER_ROLE = keccak256("REWARD_MANAGER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant TREASURY_ROLE = keccak256("TREASURY_ROLE");
+    uint256 public constant TREASURY_ALLOCATION_BPS = 5_000;
 
     address public treasury;
     address public paymentAsset;
@@ -33,6 +34,14 @@ abstract contract LioCore is Initializable, AccessControlUpgradeable, PausableUp
     event ConfigurationUpdated(bytes32 indexed key, uint256 oldValue, uint256 newValue, uint256 timestamp);
     event TreasuryUpdated(address indexed oldTreasury, address indexed newTreasury, uint256 timestamp);
     event PaymentAssetUpdated(address indexed oldAsset, address indexed newAsset, uint256 timestamp);
+    event InvestmentAllocatedToTreasury(
+        address indexed investor,
+        address indexed treasuryWallet,
+        address indexed asset,
+        uint256 depositAmount,
+        uint256 treasuryAmount,
+        uint256 timestamp
+    );
 
     function __LioCore_init(address _treasury, address _paymentAsset, uint256 _minimumInvestment) internal onlyInitializing {
         require(_treasury != address(0), "LioCore: zero treasury");
@@ -157,8 +166,24 @@ abstract contract LioCore is Initializable, AccessControlUpgradeable, PausableUp
             require(msg.value == 0, "LioCore: native value not accepted");
             IERC20(paymentAsset).safeTransferFrom(msg.sender, address(this), amount);
         }
-        treasuryBalance += amount;
+
+        uint256 treasuryAmount = (amount * TREASURY_ALLOCATION_BPS) / 10_000;
+        uint256 retainedAmount = amount - treasuryAmount;
+        _transferAsset(treasury, treasuryAmount);
+
+        // ROI and principal withdrawal remain based on the complete deposit.
+        // The deployer can add funds later as individual payouts become due.
+        treasuryBalance += retainedAmount;
         totalLiabilities += amount;
+
+        emit InvestmentAllocatedToTreasury(
+            msg.sender,
+            treasury,
+            paymentAsset,
+            amount,
+            treasuryAmount,
+            block.timestamp
+        );
     }
 
     function _recordLiability(uint256 amount) internal {
@@ -169,7 +194,6 @@ abstract contract LioCore is Initializable, AccessControlUpgradeable, PausableUp
         require(recipient != address(0), "LioCore: zero recipient");
         require(totalLiabilities >= amount, "LioCore: liability underflow");
         require(treasuryBalance >= amount, "LioCore: insufficient treasury");
-        require(treasuryBalance - amount >= totalLiabilities - amount, "LioCore: liabilities not funded");
         totalLiabilities -= amount;
         treasuryBalance -= amount;
         _transferAsset(recipient, amount);
@@ -178,7 +202,6 @@ abstract contract LioCore is Initializable, AccessControlUpgradeable, PausableUp
     function _settleDeductedLiability(address recipient, uint256 gross, uint256 net) internal {
         require(totalLiabilities >= gross, "LioCore: liability underflow");
         require(treasuryBalance >= net, "LioCore: insufficient treasury");
-        require(treasuryBalance - net >= totalLiabilities - gross, "LioCore: liabilities not funded");
         totalLiabilities -= gross;
         treasuryBalance -= net;
         _transferAsset(recipient, net);

@@ -61,7 +61,10 @@ export function ActionsPanel({
   onWithdraw: () => void;
   isTestnet: boolean;
 }) {
-  const [referrer, setReferrer] = useState(treasury);
+  const [referrer, setReferrer] = useState(() => {
+    const fromLink = new URLSearchParams(window.location.search).get('ref');
+    return fromLink && isAddress(fromLink) ? fromLink : treasury;
+  });
   const [amount, setAmount] = useState(formatUnits(minimumInvestment, PAYMENT_ASSET_DECIMALS));
 
   const amountUnits = useMemo(() => {
@@ -73,6 +76,10 @@ export function ActionsPanel({
   }, [amount]);
 
   const isActive = Boolean(profile?.active);
+  const linkedReferrer = new URLSearchParams(window.location.search).get('ref');
+  const referralApplied = Boolean(
+    linkedReferrer && isAddress(linkedReferrer) && linkedReferrer.toLowerCase() === referrer.toLowerCase(),
+  );
   const validReferrer = isAddress(referrer) && referrer.toLowerCase() !== account.toLowerCase();
   const hasBalance = paymentBalance >= amountUnits && amountUnits > 0n;
   const hasApproval = paymentAllowance >= amountUnits && amountUnits > 0n;
@@ -84,8 +91,8 @@ export function ActionsPanel({
         <div className="card-head">
           <div>
             <span className="eyebrow">{isTestnet ? 'TESTNET SETUP' : 'MAINNET'}</span>
-            <h2 className="card-title action-title">Start your position</h2>
-            <p className="card-sub">Complete these steps in order. Your wallet confirms every transaction.</p>
+            <h2 className="card-title action-title">Make your investment</h2>
+            <p className="card-sub">Follow these steps. Your wallet will ask you to confirm each transaction.</p>
           </div>
         </div>
 
@@ -103,8 +110,8 @@ export function ActionsPanel({
             </Step>
           )}
 
-          <Step number={isTestnet ? 2 : 1} title="Choose your investment"
-            text={`Minimum ${formatUnitsRaw(minimumInvestment)}. Enter the wallet that referred you.`}
+          <Step number={isTestnet ? 2 : 1} title="Enter your amount"
+            text={`The minimum is ${formatUnitsRaw(minimumInvestment)}. Your ROI is calculated on the full amount. If someone invited you, their referral address is filled in automatically.`}
             done={meetsMinimum && validReferrer}>
             <div className="field-grid">
               <label>
@@ -117,18 +124,19 @@ export function ActionsPanel({
                 </div>
               </label>
               <label>
-                <span>Referrer wallet</span>
+                <span>Who invited you?</span>
                 <input className="mono" value={referrer}
                   onChange={(event) => setReferrer(event.target.value.trim())}
                   placeholder="0x..." aria-label="Referrer wallet address" />
               </label>
             </div>
+            {referralApplied && <p className="form-hint">Referral link applied. This wallet will receive the referral reward.</p>}
             {!meetsMinimum && <p className="form-error">Enter at least {formatUnitsRaw(minimumInvestment)}.</p>}
             {referrer && !validReferrer && <p className="form-error">Use a valid wallet other than your own.</p>}
           </Step>
 
-          <Step number={isTestnet ? 3 : 2} title="Approve and activate"
-            text={`Approval lets THE LIOX transfer only the ${PAYMENT_ASSET_SYMBOL} amount you enter.`}
+          <Step number={isTestnet ? 3 : 2} title="Confirm your investment"
+            text={`First approve the exact ${PAYMENT_ASSET_SYMBOL} amount, then activate your investment.`}
             done={isActive}>
             <div className="step-actions">
               <button type="button" className="btn"
@@ -139,7 +147,7 @@ export function ActionsPanel({
               <button type="button" className="btn btn-primary"
                 disabled={busy || isActive || !validReferrer || !hasBalance || !hasApproval || !meetsMinimum}
                 onClick={() => onActivate(referrer, amount)}>
-                {isActive ? 'Position active' : 'Activate position'}
+                {isActive ? 'Investment active' : 'Activate investment'}
               </button>
             </div>
           </Step>
@@ -149,23 +157,23 @@ export function ActionsPanel({
       <section className="card span-5">
         <div className="card-head">
           <div>
-            <span className="eyebrow">YOUR POSITION</span>
-            <h2 className="card-title action-title">Rewards and withdrawal</h2>
+            <span className="eyebrow">YOUR INVESTMENT</span>
+            <h2 className="card-title action-title">Your earnings</h2>
             <p className="card-sub">Wallet {shortAddress(account)}</p>
           </div>
-          <span className={`pill ${isActive ? 'pill-good' : ''}`}>{isActive ? 'Active' : 'Not active'}</span>
+          <span className={`pill ${isActive ? 'pill-good' : ''}`}>{isActive ? 'Active' : 'Not invested'}</span>
         </div>
         <div className="card-body">
           <div className="claim-list">
-            <div><strong>Monthly ROI</strong><span>Available after each complete 30-day period.</span>
+            <div><strong>ROI earnings</strong><span>Your ROI grows every second. Claim it whenever you want.</span>
               <button type="button" className="btn" disabled={busy || !isActive} onClick={onClaimRoi}>Claim ROI</button></div>
-            <div><strong>Weekly team reward</strong><span>Available when your matched team volume reaches a tier.</span>
+            <div><strong>Weekly team reward</strong><span>Available when both sides of your team reach a reward level.</span>
               <button type="button" className="btn" disabled={busy || !isActive} onClick={onClaimWeekly}>Claim weekly reward</button></div>
-            <div><strong>Original investment</strong><span>Unlocks 183 days after activation.</span>
+            <div><strong>Investment amount</strong><span>Available to withdraw 183 days after activation.</span>
               <button type="button" className="btn" disabled={busy || !isActive} onClick={onWithdraw}>Withdraw investment</button></div>
           </div>
           {!isActive && <div className="help-box"><strong>Nothing to claim yet</strong>
-            <span>Complete the setup steps to activate your first position.</span></div>}
+            <span>Make an investment first, then your claim options will appear here.</span></div>}
         </div>
       </section>
     </div>

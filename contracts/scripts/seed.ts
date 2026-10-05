@@ -45,8 +45,8 @@ async function main() {
   console.log(`TheLio: ${deployment.address}`);
   console.log(`Admin:  ${admin.address}\n`);
 
-  // 1. Pre-fund rewards so principal liabilities remain fully backed while the
-  //    activation transaction pays each 5% direct commission immediately.
+  // 1. Fund the demo so seeded investors can exercise every payout path while
+  //    each activation pays its 5% direct commission immediately.
   const treasuryBalance = await theLio.treasuryBalance();
   if (treasuryBalance.isZero()) {
     await (await theLio.fundTreasury(TREASURY_FUNDING, { value: TREASURY_FUNDING })).wait();
@@ -88,8 +88,7 @@ async function main() {
     );
   }
 
-  // 4. Advance the chain so ROI actually accrues. accrueROI credits whole
-  //    30-day periods only, so anything under a month would leave it at zero.
+  // 4. Advance the chain so the continuously prorated ROI is visible.
   await network.provider.send("evm_increaseTime", [DAYS_TO_ADVANCE * 86_400]);
   await network.provider.send("evm_mine", []);
   console.log(`[time]     advanced ${DAYS_TO_ADVANCE} days`);

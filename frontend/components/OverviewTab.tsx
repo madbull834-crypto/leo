@@ -4,6 +4,7 @@ import { StatTile } from './ui/StatTile';
 import { LegBalanceChart } from './charts/LegBalanceChart';
 import { RewardsStackChart, type StackRow } from './charts/RewardsStackChart';
 import { RoiProjectionChart } from './charts/RoiProjectionChart';
+import { ReferralCard } from './ReferralCard';
 import { compact, ratio, toNumber } from '../lib/viz';
 import { formatUnitsRaw } from '../lib/format';
 import { PAYMENT_ASSET_DECIMALS, PAYMENT_ASSET_SYMBOL } from '../lib/contract';
@@ -101,21 +102,29 @@ export function OverviewTab({ state }: { state: LioState }) {
     <>
       <div className="grid-cards">
         <StatTile label="Your investment" value={`${compact(principal)} ${PAYMENT_ASSET_SYMBOL}`}
-          foot={<span>{profile?.active ? `Unlocks after ${lockDays} days` : 'No active position'}</span>} />
-        <StatTile label="Monthly ROI earned" value={`${compact(roiAccrued)} ${PAYMENT_ASSET_SYMBOL}`}
+          foot={<span>{profile?.active ? `Unlocks after ${lockDays} days` : 'No active investment'}</span>} />
+        <StatTile label="ROI earned" value={`${compact(roiAccrued)} ${PAYMENT_ASSET_SYMBOL}`}
           foot={<span>{formatUnitsRaw(profile?.roiClaimed)} claimed</span>} />
         <StatTile label="Referral rewards" value={`${compact(directRewards)} ${PAYMENT_ASSET_SYMBOL}`}
           foot={<span>{Number(config.directReferralBps) / 100}% of referred volume</span>} />
         <StatTile label="Team rewards" value={`${compact(teamRewards)} ${PAYMENT_ASSET_SYMBOL}`}
-          foot={<span>Weekly tier {tierNumber || '-'}</span>} />
+          foot={<span>Weekly level {tierNumber || '-'}</span>} />
+      </div>
+
+      <div className="grid-cards">
+        <ReferralCard
+          account={state.account}
+          active={Boolean(profile?.active)}
+          rewardPercent={Number(config.directReferralBps) / 100}
+        />
       </div>
 
       <div className="grid-cards">
         <section className="card span-4">
           <div className="card-head">
             <div>
-              <h2 className="card-title">Current weekly tier</h2>
-              <p className="card-sub">From matched left/right volume</p>
+              <h2 className="card-title">Your weekly reward level</h2>
+              <p className="card-sub">Based on the balance between your left and right teams</p>
             </div>
           </div>
           <div className="card-body">
@@ -125,9 +134,9 @@ export function OverviewTab({ state }: { state: LioState }) {
             </div>
             <div style={{ marginTop: 14 }}>
               {profile?.active ? (
-                <span className="pill pill-good"><span className="pill-icon">●</span>Active position</span>
+                <span className="pill pill-good"><span className="pill-icon">●</span>Investment active</span>
               ) : (
-                <span className="pill"><span className="pill-icon">○</span>No position</span>
+                <span className="pill"><span className="pill-icon">○</span>Not invested</span>
               )}
             </div>
             <Meter
@@ -143,8 +152,8 @@ export function OverviewTab({ state }: { state: LioState }) {
         </section>
 
         <ChartCard
-          title="Binary leg balance"
-          subtitle="Left against right volume; payouts follow the weaker leg"
+          title="Your left and right teams"
+          subtitle="Weekly rewards are based on the smaller team"
           className="span-8"
           table={legTable}
         >
@@ -154,10 +163,10 @@ export function OverviewTab({ state }: { state: LioState }) {
 
       <div className="grid-cards">
         <ChartCard
-          title="How your monthly ROI grows"
+          title="How your ROI grows"
           subtitle={
             principal > 0
-              ? `ROI is added after each complete 30-day period at ${Number(config.roiMinBps) / 100}% per month`
+              ? `ROI accrues every second at ${Number(config.roiMinBps) / 100}% per 30-day month`
               : `Example based on the ${formatUnitsRaw(config.minimumInvestment)} minimum investment`
           }
           className="span-7"
@@ -173,8 +182,8 @@ export function OverviewTab({ state }: { state: LioState }) {
         <section className="card span-5">
           <div className="card-head">
             <div>
-              <h2 className="card-title">Position timers</h2>
-              <p className="card-sub">Lock and claim state for this account</p>
+              <h2 className="card-title">Important dates</h2>
+              <p className="card-sub">See when your investment unlocks and how much ROI you have claimed</p>
             </div>
           </div>
           <div className="card-body">
@@ -196,11 +205,11 @@ export function OverviewTab({ state }: { state: LioState }) {
               foot={`${formatUnitsRaw(profile?.roiAccrued)} accrued, ${formatUnitsRaw(profile?.roiClaimed)} claimed`}
             />
             <Meter
-              name="Treasury liquidity used"
+              name="Amount owed vs contract balance"
               value={asset(config.totalLiabilities)}
               limit={Math.max(asset(config.treasuryBalance), 1)}
               display={`${compact(asset(config.totalLiabilities))} / ${compact(asset(config.treasuryBalance))}`}
-              foot={`${formatUnitsRaw(config.availableLiquidity)} available`}
+              foot={`${formatUnitsRaw(config.treasuryBalance)} currently held by the contract`}
             />
           </div>
         </section>
@@ -208,15 +217,15 @@ export function OverviewTab({ state }: { state: LioState }) {
 
       <div className="grid-cards">
         <ChartCard
-          title="Your reward mix"
-          subtitle="Monthly ROI, referral rewards and team rewards by connected account"
+          title="Where your earnings come from"
+          subtitle="A simple breakdown of ROI, referral earnings and weekly team rewards"
           className="span-12"
           table={stackTable}
         >
           {rows.length > 0 ? (
             <RewardsStackChart rows={rows} />
           ) : (
-            <p className="empty-state">No active position yet. Open Get started to fund your wallet and invest.</p>
+            <p className="empty-state">No investment yet. Open Invest &amp; claim when you are ready to begin.</p>
           )}
         </ChartCard>
       </div>

@@ -18,9 +18,8 @@ export interface RoiPoint {
 }
 
 /**
- * Cumulative ROI across the lock period. accrueROI credits whole 30-day
- * periods only, so the honest shape is a step - drawing a smooth curve would
- * imply continuous accrual the contract does not perform.
+ * Cumulative ROI across the lock period. The contract prorates the monthly
+ * rate per second, so the projection is continuous.
  *
  * One series, so no legend box: the card title names what is plotted.
  */
@@ -41,36 +40,30 @@ export function RoiProjectionChart({
   const { ref, width: W } = useChartWidth(620);
   const PLOT_W = Math.max(W - PAD_L - PAD_R, 60);
 
-  const { steps, scale } = useMemo(() => {
-    const months = Math.floor(lockDays / MONTH_DAYS);
+  const { points, scale } = useMemo(() => {
     const perMonth = (principal * monthlyBps) / 10_000;
     const points: RoiPoint[] = [];
-    for (let m = 0; m <= months; m += 1) {
-      points.push({ day: m * MONTH_DAYS, value: perMonth * m, month: m });
+    for (let day = 0; day <= lockDays; day += MONTH_DAYS) {
+      points.push({ day, value: perMonth * (day / MONTH_DAYS), month: day / MONTH_DAYS });
     }
-    points.push({ day: lockDays, value: perMonth * months, month: months });
-    return { steps: points, scale: niceScale(Math.max(perMonth * months, 1)) };
+    if (points[points.length - 1]?.day !== lockDays) {
+      points.push({ day: lockDays, value: perMonth * (lockDays / MONTH_DAYS), month: lockDays / MONTH_DAYS });
+    }
+    return { points, scale: niceScale(Math.max(perMonth * (lockDays / MONTH_DAYS), 1)) };
   }, [principal, monthlyBps, lockDays]);
 
   const { max, ticks: axisTicks } = scale;
   const x = (day: number) => PAD_L + (day / lockDays) * PLOT_W;
   const y = (value: number) => PAD_T + PLOT_H - (value / max) * PLOT_H;
 
-  // Step-after geometry: hold the previous value, then jump on the boundary.
   const path = useMemo(() => {
-    const parts: string[] = [`M${x(0)},${y(0)}`];
-    steps.forEach((point, index) => {
-      if (index === 0) return;
-      parts.push(`L${x(point.day)},${y(steps[index - 1].value)}`);
-      parts.push(`L${x(point.day)},${y(point.value)}`);
-    });
-    return parts.join(' ');
-  }, [steps, max, lockDays, PLOT_W, W]);
+    return points.map((point, index) => `${index === 0 ? 'M' : 'L'}${x(point.day)},${y(point.value)}`).join(' ');
+  }, [points, max, lockDays, PLOT_W, W]);
 
   const areaPath = `${path} L${x(lockDays)},${y(0)} L${x(0)},${y(0)} Z`;
 
   const valueAt = (day: number) => {
-    const month = Math.min(Math.floor(day / MONTH_DAYS), Math.floor(lockDays / MONTH_DAYS));
+    const month = Math.min(day / MONTH_DAYS, lockDays / MONTH_DAYS);
     return { month, value: ((principal * monthlyBps) / 10_000) * month };
   };
 
@@ -93,7 +86,7 @@ export function RoiProjectionChart({
       title: `Day ${day}`,
       rows: [
         { label: 'Accrued ROI', value: value.toLocaleString('en-US'), colorVar: '--series-1' },
-        { label: 'Periods credited', value: `${month} of ${Math.floor(lockDays / MONTH_DAYS)}` },
+        { label: 'Months prorated', value: `${month.toFixed(2)} of ${(lockDays / MONTH_DAYS).toFixed(2)}` },
       ],
     });
   };

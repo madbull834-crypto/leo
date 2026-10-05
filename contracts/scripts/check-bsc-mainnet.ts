@@ -20,6 +20,8 @@ async function main() {
   if ((await lio.paymentAsset()).toLowerCase() !== deployment.paymentAsset.toLowerCase()) throw new Error("Payment asset mismatch");
   if ((await lio.treasury()).toLowerCase() !== deployment.treasury.toLowerCase()) throw new Error("Treasury mismatch");
   if (!(await lio.minimumInvestment()).eq(deployment.minimumInvestment)) throw new Error("Minimum investment mismatch");
+  if (!(await lio.TREASURY_ALLOCATION_BPS()).eq(5_000)) throw new Error("Treasury allocation is not 50%");
+  if (!(await lio.isReferralEligible(deployment.treasury))) throw new Error("Treasury is not the referral root");
   if (!(await lio.planConfigurationLocked())) throw new Error("Plan configuration is not locked");
 
   const roles: Record<string, string> = {
